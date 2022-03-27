@@ -15,7 +15,6 @@ const PermissionsScreen = () => {
     if (Platform.OS === 'ios') {
       permissionStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     } else {
-      // permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
       permissionStatus = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
     }
     console.log({ permissionStatus });
