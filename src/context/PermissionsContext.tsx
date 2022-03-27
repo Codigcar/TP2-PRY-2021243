@@ -1,5 +1,5 @@
-import React, { createContext, useState } from 'react'
-import { Platform } from 'react-native';
+import React, { createContext, useEffect, useState } from 'react'
+import { AppState, Platform } from 'react-native';
 import { check, PERMISSIONS, PermissionStatus, request } from 'react-native-permissions';
 
 export interface PermissionState {
@@ -22,7 +22,17 @@ const PermissionsProvider = ({ children }: any) => {
 
     const [permissions, setPermissions] = useState(permissionInitState);
 
-    const askLocationPermission = async() => {
+    useEffect(() => {
+        // verifica si el app está en background o active
+        AppState.addEventListener('change', state => {
+            console.log({ state });
+            if (state !== 'active') return;
+            checkLocationPermission();
+        })
+    }, [])
+
+    const askLocationPermission = async () => {
+        // solicita/pregunta la activacion
         let permissionStatus: PermissionStatus;
 
         if (Platform.OS === 'ios') {
@@ -36,8 +46,20 @@ const PermissionsProvider = ({ children }: any) => {
             localStatus: permissionStatus
         })
     }
-    const checkLocationPermission = () => {
+    const checkLocationPermission = async () => {
+        // revisa
+        let permissionStatus: PermissionStatus;
 
+        if (Platform.OS === 'ios') {
+            permissionStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        } else {
+            permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+        }
+
+        setPermissions({
+            ...permissions,
+            localStatus: permissionStatus
+        })
     }
 
     return (
