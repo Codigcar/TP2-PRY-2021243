@@ -21,25 +21,35 @@ export const useLocation = () => {
         }
     }, [])
 
-
-
     useEffect(() => {
-        Geolocation.getCurrentPosition(
-            (info) => {
-                setInitialPosition({
-                    latitude: info.coords.latitude,
-                    longitude: info.coords.longitude
-                })
+
+        getCurrentLocation()
+            .then( location => {
+                setInitialPosition(location);
                 setHasLocation(true);
-            },
-            (err) => console.error({ err }),
-            { enableHighAccuracy: true }
-        );
+            });
+
     }, []);
+
+    const getCurrentLocation = (): Promise<Location> => {
+        return new Promise( (resolve, reject) => {
+            Geolocation.getCurrentPosition(
+                ({ coords }) => {
+                    
+                    resolve({
+                        latitude: coords.latitude,
+                        longitude: coords.longitude
+                    });
+                },
+                (err) => reject({ err }), { enableHighAccuracy: true }
+            );
+        });
+    }
 
 
     return {
         hasLocation,
         initialPosition,
+        getCurrentLocation
     }
 }
