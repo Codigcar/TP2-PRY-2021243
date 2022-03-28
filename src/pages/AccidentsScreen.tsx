@@ -32,7 +32,6 @@ export const AccidentsScreen = () => {
       </View>
     </TouchableOpacity>
   )
-
 }
 
 const styles = StyleSheet.create({
