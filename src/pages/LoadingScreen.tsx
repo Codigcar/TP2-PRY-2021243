@@ -1,7 +1,7 @@
 import React from 'react'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 
-const LoadingScreen = () => {
+export const LoadingScreen = () => {
     return (
         <View style={styles.container}>
             <ActivityIndicator
@@ -19,5 +19,3 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     }
 })
-
-export { LoadingScreen } 

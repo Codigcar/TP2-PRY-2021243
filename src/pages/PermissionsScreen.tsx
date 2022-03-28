@@ -4,7 +4,7 @@ import { PermissionContext } from '../context/PermissionsContext';
 import { check, PERMISSIONS, PermissionStatus, request } from 'react-native-permissions';
 
 
-const PermissionsScreen = () => {
+export const PermissionsScreen = () => {
 
   const { permissions, askLocationPermission } = useContext(PermissionContext);
 
@@ -26,5 +26,3 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
-
-export { PermissionsScreen }

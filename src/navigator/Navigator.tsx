@@ -1,11 +1,13 @@
 import React, { useContext } from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
-import { LoadingScreen, MapScreen, PermissionsScreen } from '../pages';
 import { PermissionContext } from '../context/PermissionsContext';
+import { LoadingScreen } from '../pages/LoadingScreen';
+import { MapScreen } from '../pages/MapScreen';
+import { PermissionsScreen } from '../pages/PermissionsScreen';
 
 const Stack = createStackNavigator();
 
-const Navigator = () => {
+export const Navigator = () => {
 
   const { permissions } = useContext(PermissionContext);
 
@@ -31,5 +33,3 @@ const Navigator = () => {
     </Stack.Navigator>
   )
 }
-
-export default Navigator

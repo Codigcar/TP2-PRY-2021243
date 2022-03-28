@@ -18,12 +18,13 @@ type PermissionContextProps = {
 
 export const PermissionContext = createContext({} as PermissionContextProps); // TODO: que data compartirá
 
-const PermissionsProvider = ({ children }: any) => {
+export const PermissionsProvider = ({ children }: any) => {
 
     const [permissions, setPermissions] = useState(permissionInitState);
 
     useEffect(() => {
         // verifica si el app está en background o active
+        checkLocationPermission();
         AppState.addEventListener('change', state => {
             console.log({ state });
             if (state !== 'active') return;
@@ -76,5 +77,3 @@ const PermissionsProvider = ({ children }: any) => {
         </PermissionContext.Provider>
     )
 }
-
-export { PermissionsProvider }
