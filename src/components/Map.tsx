@@ -1,3 +1,4 @@
+import Geolocation from '@react-native-community/geolocation';
 import React, { useEffect, useRef, useState } from 'react';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { useLocation } from '../hooks/useLocation';
@@ -11,16 +12,15 @@ interface Props {
 
 export const Map = ({ markers }: Props) => {
 
-    const { hasLocation,
+    const { 
+        hasLocation,
         initialPosition,
-        getCurrentLocation,
-        followUserLocation,
-        userLocation,
-        stopFollowUserLocation,
-        routeLines } = useLocation();
+    } = useLocation();
 
-   
-    
+
+    if(!hasLocation){
+        return <LoadingScreen />
+    }
 
     return (
         <>
@@ -37,8 +37,10 @@ export const Map = ({ markers }: Props) => {
                 <Marker
                     // image={ require('../assets/custom-marker.png') }
                     coordinate={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
+                        // latitude: 37.78825,
+                        // longitude: -122.4324,
+                        latitude: initialPosition.latitude,
+                        longitude: initialPosition.longitude,
                     }}
                     title="Esto es un título"
                     description="Esto es una descripción del marcador"
