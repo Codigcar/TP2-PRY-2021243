@@ -65,6 +65,9 @@ export const BottomNavigator = () => {
             case 'Accidents':
               iconName = 'list'
               break;
+            case 'Accidents2':
+              iconName = 'list'
+              break;
           }
 
           return <Icon name={iconName} size={20} color={'red'} />
@@ -76,7 +79,8 @@ export const BottomNavigator = () => {
       sceneAnimationEnabled={true}
     >
       <Tab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
-      <Tab.Screen name="Accidents" options={{ title: 'Accidentes' }} component={AccidentsScreen} />
+      <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={AccidentsScreen} />
+      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={AccidentsScreen} />
     </Tab.Navigator>
   );
 }
