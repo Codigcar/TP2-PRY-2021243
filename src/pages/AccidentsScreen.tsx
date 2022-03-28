@@ -1,14 +1,17 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export const AccidentsScreen = () => {
+interface Props extends StackScreenProps<any, any>{}
+
+export const AccidentsScreen = ({navigation}: Props) => {
 
   const [listAccidents, setListAccidents] = useState([]);
 
   return (
-    <TouchableOpacity style={styles.card} >
+    <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('AccidentDetail')} >
       <View style={styles.flexRow}>
         <View style={styles.avatar}>
           <Avatar

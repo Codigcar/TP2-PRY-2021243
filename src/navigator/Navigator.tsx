@@ -12,10 +12,11 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import AccidentsDetail from '../pages/AccidentsDetail';
 
 const Stack = createStackNavigator();
+const StackV2 = createStackNavigator();
 // const Tab = createBottomTabNavigator();
 const Tab = createMaterialBottomTabNavigator();
-export const Navigator = () => {
 
+export const Navigator = () => {
   const { permissions } = useContext(PermissionsContext);
 
   if (permissions.locationStatus === 'unavailable') {
@@ -44,7 +45,7 @@ export const Navigator = () => {
 export const BottomNavigator = () => {
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: 'white',
         tabBarStyle: {
@@ -80,8 +81,26 @@ export const BottomNavigator = () => {
       sceneAnimationEnabled={true}
     >
       <Tab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
-      <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={AccidentsScreen} />
+      <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={StackNavigatorV2} />
       <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={AccidentsDetail} />
     </Tab.Navigator>
   );
+}
+
+export const StackNavigatorV2 = () => {
+
+  return (
+    <StackV2.Navigator
+      initialRouteName="AccidentsScreen"
+      screenOptions={{
+        headerShown: true,
+        cardStyle: {
+          backgroundColor: 'white'
+        }
+      }}
+    >
+      <StackV2.Screen name="AccidentsScreen" component={AccidentsScreen} />
+      <StackV2.Screen name="AccidentDetail" component={AccidentsDetail} />
+    </StackV2.Navigator>
+  )
 }
