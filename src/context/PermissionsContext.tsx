@@ -1,79 +1,95 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react';
 import { AppState, Platform } from 'react-native';
-import { check, openSettings, PERMISSIONS, PermissionStatus, request } from 'react-native-permissions';
+import { check, PERMISSIONS, PermissionStatus, request, openSettings } from 'react-native-permissions';
 
-export interface PermissionState {
-    localStatus: PermissionStatus;
+
+export interface PermissionsState {
+    locationStatus: PermissionStatus;
 }
 
-export const permissionInitState: PermissionState = {
-    localStatus: 'unavailable'
+export const permissionInitState: PermissionsState = {
+    locationStatus: 'unavailable',
 }
 
-type PermissionContextProps = {
-    permissions: PermissionState;
+type PermissionsContextProps = {
+    permissions: PermissionsState;
     askLocationPermission: () => void;
     checkLocationPermission: () => void;
 }
 
-export const PermissionContext = createContext({} as PermissionContextProps); // TODO: que data compartirá
 
-export const PermissionsProvider = ({ children }: any) => {
+export const PermissionsContext = createContext({} as PermissionsContextProps ); 
 
-    const [permissions, setPermissions] = useState(permissionInitState);
+
+
+export const PermissionsProvider = ({ children }: any ) => {
+
+    const [permissions, setPermissions] = useState( permissionInitState );
 
     useEffect(() => {
-        // verifica si el app está en background o active
+
         checkLocationPermission();
+        
         AppState.addEventListener('change', state => {
-            console.log({ state });
-            if (state !== 'active') return;
+            
+            if( state !== 'active' ) return;
+
             checkLocationPermission();
-        })
+        });
+
     }, [])
 
-    const askLocationPermission = async () => {
-        // solicita/pregunta la activacion
+
+    const askLocationPermission = async() => {
+
         let permissionStatus: PermissionStatus;
 
-        if (Platform.OS === 'ios') {
-            permissionStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        if ( Platform.OS === 'ios' ) {
+            permissionStatus = await request( PERMISSIONS.IOS.LOCATION_WHEN_IN_USE );
         } else {
-            permissionStatus = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+            permissionStatus = await request( PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION );
         }
 
-        if(permissionStatus==='blocked'){
+        if ( permissionStatus === 'blocked' ) {
             openSettings();
         }
 
         setPermissions({
             ...permissions,
-            localStatus: permissionStatus
-        })
+            locationStatus: permissionStatus
+        });
+
     }
-    const checkLocationPermission = async () => {
-        // revisa
+
+    const checkLocationPermission = async() => {
         let permissionStatus: PermissionStatus;
 
-        if (Platform.OS === 'ios') {
-            permissionStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        if ( Platform.OS === 'ios' ) {
+            permissionStatus = await check( PERMISSIONS.IOS.LOCATION_WHEN_IN_USE );
         } else {
-            permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+            permissionStatus = await check( PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION );
         }
 
         setPermissions({
             ...permissions,
-            localStatus: permissionStatus
-        })
+            locationStatus: permissionStatus
+        });
     }
 
-    return (
-        <PermissionContext.Provider value={{
+
+    
+
+    return(
+        <PermissionsContext.Provider value={{
             permissions,
             askLocationPermission,
-            checkLocationPermission
-        }} >
-            {children}
-        </PermissionContext.Provider>
+            checkLocationPermission,
+        }}>
+            { children }
+        </PermissionsContext.Provider>
     )
+
 }
+
+
+

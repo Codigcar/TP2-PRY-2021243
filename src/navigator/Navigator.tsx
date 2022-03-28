@@ -1,17 +1,17 @@
 import React, { useContext } from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
-import { PermissionContext } from '../context/PermissionsContext';
 import { LoadingScreen } from '../pages/LoadingScreen';
 import { MapScreen } from '../pages/MapScreen';
 import { PermissionsScreen } from '../pages/PermissionsScreen';
+import { PermissionsContext } from '../context/PermissionsContext';
 
 const Stack = createStackNavigator();
 
 export const Navigator = () => {
 
-  const { permissions } = useContext(PermissionContext);
+  const { permissions } = useContext(PermissionsContext);
 
-  if (permissions.localStatus === 'unavailable') {
+  if (permissions.locationStatus === 'unavailable') {
     return <LoadingScreen />
   }
 
@@ -26,7 +26,7 @@ export const Navigator = () => {
       }}
     >
       {
-        (permissions.localStatus === 'granted')
+        (permissions.locationStatus === 'granted')
         ? <Stack.Screen name="MapScreen" component={MapScreen} ></Stack.Screen>
         : <Stack.Screen name="PermissionScreen" component={PermissionsScreen} ></Stack.Screen>
       }
