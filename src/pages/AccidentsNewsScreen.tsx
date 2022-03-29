@@ -37,11 +37,16 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
     })
 
     return () => {
-
     }
-
   }, [])
 
+  useEffect(() => {
+    if(accidents.length > 0){
+      console.log({accidents});
+      
+    }
+  }, [accidents])
+  
 
   const rendeItem = () => {
     return (
@@ -74,7 +79,7 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
   return (
     <View>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Accidentes Recientes</Text>
+        <Text style={styles.headerTitle}>Recientes</Text>
       </View>
       <Divider style={styles.dividerTitleLineRed} />
       <FlatList

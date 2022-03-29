@@ -72,7 +72,7 @@ export const AccidentsFinishedScreen = ({ navigation }: Props) => {
   return (
     <View>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Accidentes Atendidos</Text>
+        <Text style={styles.headerTitle}>Atendidos</Text>
       </View>
       <Divider style={styles.dividerTitleLineRed} />
       <FlatList
