@@ -41,7 +41,7 @@ export const useLocation = () => {
                         longitude: coords.longitude
                     });
                 },
-                (err) => reject({ err }), { enableHighAccuracy: true }
+                (err) => reject({ err }), { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
             );
         });
     }
