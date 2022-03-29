@@ -5,11 +5,12 @@ import { MapScreen } from '../pages/MapScreen';
 import { PermissionsScreen } from '../pages/PermissionsScreen';
 import { PermissionsContext } from '../context/PermissionsContext';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AccidentsScreen } from '../pages/AccidentsScreen';
+import { AccidentsNewsScreen } from '../pages/AccidentsNewsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import AccidentsDetailScreen from '../pages/AccidentsDetailScreen';
+import { AccidentsFinishedScreen } from '../pages/AccidentsFinishedScreen';
 
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
@@ -41,7 +42,6 @@ export const Navigator = () => {
     </Stack.Navigator>
   )
 }
-
 export const BottomNavigator = () => {
   return (
     <Tab.Navigator
@@ -82,7 +82,7 @@ export const BottomNavigator = () => {
     >
       <Tab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
       <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={StackNavigatorV2} />
-      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={AccidentsDetailScreen} />
+      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={AccidentsFinishedScreen} />
     </Tab.Navigator>
   );
 }
@@ -93,13 +93,13 @@ export const StackNavigatorV2 = () => {
     <StackV2.Navigator
       initialRouteName="AccidentsScreen"
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         cardStyle: {
           backgroundColor: 'white'
         }
       }}
     >
-      <StackV2.Screen name="AccidentsScreen" component={AccidentsScreen} />
+      <StackV2.Screen name="AccidentsScreen" component={AccidentsNewsScreen} />
       <StackV2.Screen name="AccidentDetail" component={AccidentsDetailScreen} />
     </StackV2.Navigator>
   )
