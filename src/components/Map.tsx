@@ -5,10 +5,11 @@ import { useLocation } from '../hooks/useLocation';
 import { LoadingScreen } from '../pages/LoadingScreen';
 import { Fab } from './Fab';
 
+
+
 interface Props {
     markers?: Marker[];
 }
-
 
 export const Map = ({ markers }: Props) => {
 
@@ -20,17 +21,19 @@ export const Map = ({ markers }: Props) => {
 
     const mapViewRef = useRef<MapView>();
 
-
     const centerPosition = async () => {
         const { latitude, longitude } = await getCurrentLocation();
         mapViewRef.current?.animateCamera({
             center: { latitude, longitude }
         });
     }
+    console.log('[Markersv1]: ', initialPosition.latitude);
+    console.log('[Markersv2]: ', initialPosition.longitude);
 
     if (!hasLocation) {
         return <LoadingScreen />
     }
+
 
     return (
         <>
@@ -45,17 +48,21 @@ export const Map = ({ markers }: Props) => {
                     longitudeDelta: 0.0421,
                 }}
             >
-                <Marker
-                    // image={ require('../assets/custom-marker.png') }
-                    coordinate={{
-                        latitude: initialPosition.latitude,
-                        longitude: initialPosition.longitude,
-                    }}
-                    title="Esto es un título"
-                    description="Esto es una descripción del marcador"
-                />
+                {
+                    markers && markers.length > 0 && markers.map((marker: any, key:any) => (
+                        <Marker
+                            // image={ require('../assets/custom-marker.png') }
+                            key={key}
+                            coordinate={{
+                                latitude:  Number(marker.latitude),
+                                longitude: Number(marker.altitude),
+                            }}
+                            title="Esto es un título"
+                            description="Esto es una descripción del marcador"
+                        />
+                    ))
+                }
             </MapView>
-
             <Fab
                 iconName="compass-outline"
                 onPress={centerPosition}
