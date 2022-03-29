@@ -1,20 +1,41 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import { Styles } from '../assets/css/Styles';
 import { Button } from 'react-native-elements';
 import CModal from '../components/CModal';
-const AccidentsDetail = () => {
+import fetchWithToken from '../utils/fetchCustom';
+import { io } from "socket.io-client";
+
+
+const AccidentsDetailScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
+    const socketRef = useRef<any>();
 
-
-    const saveRegiter = () => {
+    const updateRegiter = async () => {
         setModalVisible(true);
+        const data: any = {
+            "description": 'description',
+            "conclusion": 'conclusion'
+        }
+        try {
+            const sol = await fetchWithToken(`api/accidents/fbeef40a-dd8f-46ac-a72d-aef02f6d5b77`, data, 'PUT');
+            const resp = await sol.json();
+            console.log({ resp });
+            if (resp?.id) {
+                socketRef.current = io('http://10.0.2.2:3001');
+                socketRef.current.emit('accidents-taken', { id: 'fbeef40a-dd8f-46ac-a72d-aef02f6d5b77' })
+            }
+        } catch (error) {
+            console.error({error});
+            
+        }
+
     };
 
     return (
         <ScrollView>
-            <View style={[styles.card,  modalVisible && styles.opacity ]} >
+            <View style={[styles.card, modalVisible && styles.opacity]} >
                 <View style={styles.flexRow}>
                     <View style={styles.avatar}>
                         <Avatar
@@ -56,7 +77,7 @@ const AccidentsDetail = () => {
                     <Button
                         title="Guardar registro"
                         buttonStyle={{ backgroundColor: Styles.colors.primary, marginTop: 30 }}
-                        onPress={saveRegiter}
+                        onPress={updateRegiter}
                     />
                 </View>
             </View>
@@ -85,9 +106,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 15
     },
-    opacity:{
-        opacity:.4
+    opacity: {
+        opacity: .4
     }
 })
 
-export default AccidentsDetail
+export default AccidentsDetailScreen

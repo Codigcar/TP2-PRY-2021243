@@ -22,10 +22,10 @@ const fetchWithToken = (
     } else {
       return fetch(url, {
         method,
-        headers: {
-          'Content-type': 'application/json',
+        headers: new Headers({
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-        },
+        }),
         body: JSON.stringify(data),
       });
     }

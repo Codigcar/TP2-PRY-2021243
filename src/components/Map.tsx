@@ -49,12 +49,12 @@ export const Map = ({ markers }: Props) => {
                 }}
             >
                 {
-                    markers && markers.length > 0 && markers.map((marker: any, key:any) => (
-                        <Marker
+                    markers && markers.length > 0 && markers.map((marker: any, key: any) => (
+                        marker.status && <Marker
                             // image={ require('../assets/custom-marker.png') }
                             key={key}
                             coordinate={{
-                                latitude:  Number(marker.latitude),
+                                latitude: Number(marker.latitude),
                                 longitude: Number(marker.altitude),
                             }}
                             title="Esto es un título"

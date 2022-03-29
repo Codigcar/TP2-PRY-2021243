@@ -27,6 +27,15 @@ export const MapScreen = () => {
     socketRef.current.on('accidents', (data: any) => {
       setMarkers((oldArray: any) => [...oldArray, data]);
     })
+    
+    socketRef.current.on('accidents-taken', (data: any) => {
+      // let shallow = markers.slice();
+
+      // console.log({shallow});
+      
+      // shallow &&
+      setMarkers((array:any) => array.filter((item:any) => item.id !== data.id));
+    })
   }, [])
 
   useEffect(() => {

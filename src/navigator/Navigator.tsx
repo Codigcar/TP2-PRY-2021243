@@ -9,7 +9,7 @@ import { AccidentsScreen } from '../pages/AccidentsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import AccidentsDetail from '../pages/AccidentsDetail';
+import AccidentsDetailScreen from '../pages/AccidentsDetailScreen';
 
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
@@ -82,7 +82,7 @@ export const BottomNavigator = () => {
     >
       <Tab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
       <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={StackNavigatorV2} />
-      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={AccidentsDetail} />
+      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={AccidentsDetailScreen} />
     </Tab.Navigator>
   );
 }
@@ -100,7 +100,7 @@ export const StackNavigatorV2 = () => {
       }}
     >
       <StackV2.Screen name="AccidentsScreen" component={AccidentsScreen} />
-      <StackV2.Screen name="AccidentDetail" component={AccidentsDetail} />
+      <StackV2.Screen name="AccidentDetail" component={AccidentsDetailScreen} />
     </StackV2.Navigator>
   )
 }
