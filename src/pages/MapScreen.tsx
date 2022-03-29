@@ -29,20 +29,15 @@ export const MapScreen = () => {
     })
     
     socketRef.current.on('accidents-taken', (data: any) => {
-      // let shallow = markers.slice();
-
-      // console.log({shallow});
-      
-      // shallow &&
       setMarkers((array:any) => array.filter((item:any) => item.id !== data.id));
     })
   }, [])
 
-  useEffect(() => {
-    if (markers) {
-      console.log({ markers: markers });
-    }
-  }, [markers])
+  // useEffect(() => {
+  //   if (markers) {
+  //     console.log({ markers: markers });
+  //   }
+  // }, [markers])
 
 
   return (
