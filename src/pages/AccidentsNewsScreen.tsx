@@ -1,11 +1,12 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Platform, Button } from 'react-native';
 import { Avatar, Divider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import fetchWithToken from '../utils/fetchCustom';
 import { io } from "socket.io-client";
 import { Styles } from '../assets/css/Styles';
+import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> { }
 
@@ -25,6 +26,14 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
     }
   }
 
+  const showToast = () => {
+    Toast.show({
+      type: 'success',
+      text1: '¡Nuevo Accidente!',
+      text2: 'En Av. Las Palmeras 321 👋'
+    });
+  }
+
   useEffect(() => {
     fetchListAccidents().then((resp: any) => setListAccidents(resp));
     socketRef.current = io('http://10.0.2.2:3001');
@@ -41,12 +50,12 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
   }, [])
 
   useEffect(() => {
-    if(accidents.length > 0){
-      console.log({accidents});
-      
+    if (accidents.length > 0) {
+      console.log({ accidents });
+      showToast();
     }
   }, [accidents])
-  
+
 
   const rendeItem = () => {
     return (
@@ -73,6 +82,7 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
           </View>
         </View>
       </TouchableOpacity>
+
     )
   }
 

@@ -5,7 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Navigator } from './src/navigator/Navigator';
 import { PermissionsProvider } from './src/context/PermissionsContext';
 import { LogBox } from 'react-native';
-
+import Toast from 'react-native-toast-message';
+import { toastConfig } from './src/utils/toastConfig';
 
 LogBox.ignoreAllLogs
 LogBox.ignoreLogs([
@@ -28,6 +29,7 @@ const App = () => {
       <AppState>
         <Navigator />
       </AppState>
+      <Toast config={toastConfig} />
     </NavigationContainer>
   )
 };
