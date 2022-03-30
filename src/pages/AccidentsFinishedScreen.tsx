@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
   },
   dividerTitleLineRed: {
-    borderColor: '#d41c1c',
+    borderColor: Styles.colors.primary,
     backgroundColor: '#d41c1c',
     borderWidth: 2,
     marginLeft: 20,

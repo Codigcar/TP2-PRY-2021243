@@ -11,6 +11,7 @@ import { Text } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import AccidentsDetailScreen from '../pages/AccidentsDetailScreen';
 import { AccidentsFinishedScreen } from '../pages/AccidentsFinishedScreen';
+import { Styles } from '../assets/css/Styles';
 
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
@@ -71,7 +72,7 @@ export const BottomNavigator = () => {
               break;
           }
 
-          return <Icon name={iconName} size={20} color={'red'} />
+          return <Icon name={iconName} size={20} color={Styles.colors.primary} />
         }
       })}
       barStyle={{

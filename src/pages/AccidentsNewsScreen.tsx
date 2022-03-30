@@ -78,7 +78,7 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
             <Text>Fase: Sin atender</Text>
           </View>
           <View style={styles.arrow} >
-            <Icon name='chevron-forward-outline' size={30} />
+            <Icon name='chevron-forward-outline' size={30} color={Styles.colors.primary} />
           </View>
         </View>
       </TouchableOpacity>
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
   },
   dividerTitleLineRed: {
-    borderColor: '#d41c1c',
+    borderColor: Styles.colors.primary,
     backgroundColor: '#d41c1c',
     borderWidth: 2,
     marginLeft: 20,
