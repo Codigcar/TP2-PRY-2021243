@@ -14,6 +14,8 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
 
   const socketRef = useRef<any>();
   const [accidents, setListAccidents] = useState<any>([]);
+  const isActive = useRef<any>(false);
+  // const [isActive, setIsActive] = useState(false);
 
 
   const fetchListAccidents = async () => {
@@ -26,6 +28,29 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
     }
   }
 
+  // useEffect(() => {
+  //   if (accidents.length > 0 && isActive.current) {
+  //     showToast();
+  //   }
+  // }, [accidents])
+
+  useEffect(() => {
+    fetchListAccidents().then((resp: any) => setListAccidents(resp));
+    socketRef.current = io('http://10.0.2.2:3001');
+    socketRef.current.on('accidents', (data: any) => {
+      console.log({ data });
+      showToast();
+      setListAccidents((oldArray: any) => [...oldArray, data]);
+    })
+
+    socketRef.current.on('accidents-taken', (data: any) => {
+      setListAccidents((array: any) => array.filter((item: any) => item.id !== data.id));
+    })
+    isActive.current = true;
+
+  }, [])
+
+
   const showToast = () => {
     Toast.show({
       type: 'success',
@@ -33,28 +58,6 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
       text2: 'En Av. Las Palmeras 321 👋'
     });
   }
-
-  useEffect(() => {
-    fetchListAccidents().then((resp: any) => setListAccidents(resp));
-    socketRef.current = io('http://10.0.2.2:3001');
-    socketRef.current.on('accidents', (data: any) => {
-      setListAccidents((oldArray: any) => [...oldArray, data]);
-    })
-
-    socketRef.current.on('accidents-taken', (data: any) => {
-      setListAccidents((array: any) => array.filter((item: any) => item.id !== data.id));
-    })
-
-    return () => {
-    }
-  }, [])
-
-  useEffect(() => {
-    if (accidents.length > 0) {
-      console.log({ accidents });
-      showToast();
-    }
-  }, [accidents])
 
 
   const rendeItem = () => {
