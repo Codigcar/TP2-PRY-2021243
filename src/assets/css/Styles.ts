@@ -1,4 +1,4 @@
-const color_primary = '#7D6FFF';
+const color_primary = '#181c64';
 
 export const Styles = {
     colors: {

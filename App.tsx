@@ -7,6 +7,11 @@ import { PermissionsProvider } from './src/context/PermissionsContext';
 import { LogBox } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from './src/utils/toastConfig';
+import { LoginScreen } from './src/pages/LoginScreen';
+import { StartScreen } from './src/pages/StartScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import { RegisterGeneralScreen } from './src/pages/RegisterGeneralScreen';
+import { RegisterPoliceScreen } from './src/pages/RegisterPoliceScreen';
 
 LogBox.ignoreAllLogs
 LogBox.ignoreLogs([
@@ -23,13 +28,21 @@ const AppState = ({ children }: any) => {
   )
 }
 
+const Stack = createStackNavigator();
+
 const App = () => {
   return (
     <NavigationContainer>
-      <AppState>
+      {/* <AppState>
         <Navigator />
       </AppState>
-      <Toast config={toastConfig} />
+      <Toast config={toastConfig} /> */}
+      <Stack.Navigator>
+        <Stack.Screen name="Start" component={StartScreen}></Stack.Screen>
+        <Stack.Screen name="Register" component={RegisterGeneralScreen}></Stack.Screen>
+        <Stack.Screen name="RegisterPolicia" component={RegisterPoliceScreen}></Stack.Screen>
+        <Stack.Screen name="Login" component={LoginScreen}></Stack.Screen>
+      </Stack.Navigator>
     </NavigationContainer>
   )
 };
