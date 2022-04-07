@@ -7,10 +7,13 @@ import { PermissionsProvider } from './src/context/PermissionsContext';
 import { LogBox } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from './src/utils/toastConfig';
+import NFCScreen from './src/pages/NFCScreen';
 
-LogBox.ignoreAllLogs
+LogBox.ignoreAllLogs();
 LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
+  'Warning: ...',
+  'Error: ...'
 ]);
 
 
