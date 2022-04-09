@@ -5,11 +5,11 @@ import { theme } from '../core/theme'
 export default function Background({ children }: any) {
   return (
     <ImageBackground
-      source={require('../assets/background_dot.png')}
-      resizeMode="repeat"
+      source={require('../assets/background.png')}
+      resizeMode='stretch'
       style={styles.background}
     >
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>

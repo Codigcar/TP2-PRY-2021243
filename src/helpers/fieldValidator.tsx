@@ -1,4 +1,4 @@
 export function fieldValidator(name: string) {
-    if (!name) return "The field can't be empty."
+    if (!name) return "El campo no puede estar vacío"
     return ''
 }

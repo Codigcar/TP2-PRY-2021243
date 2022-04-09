@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { View, StyleSheet, TouchableOpacity, SegmentedControlIOSBase } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
-import Logo from '../components/Logo'
-import Header from '../components/Header'
 import Button from '../components/Button'
 import TextInput from '../components/TextInput'
 import { theme } from '../core/theme'
@@ -12,6 +10,8 @@ import { passwordValidator } from '../helpers/passwordValidator'
 import { fieldValidator } from '../helpers/fieldValidator'
 import { ScrollView } from 'react-native-gesture-handler'
 import fetchWithToken from '../utils/fetchCustom'
+import { Card, Divider } from 'react-native-elements'
+import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 
 export const RegisterGeneralScreen = ({ navigation }: any) => {
   const [name, setName] = useState({ value: '', error: '' })
@@ -38,100 +38,99 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
       return
     }
 
-    console.log(dni.value)
-
     const data: any = {
-      "dni": "asfasfasf",
-      "name": "asfasfasf",
-      "license": "asfasfsaf",
-      "patrolNumber": "adasfasf",
-      "dateOfBirth": "dsgsddgssdg",
-      "email": "test@gmail.com",
-      "password": "test123",
-      "phone":"123123123"
+      "dni": dni.value,
+      "name": name.value,
+      "dateOfBirth": birthDay.value,
+      "email": email.value,
+      "password": password.value,
+      "phone": phone.value,
+      "userType": "NORMAL"
     }
     try {
       const sol = await fetchWithToken('api/users', data, 'POST');
-      const resp = await sol.json();
-      console.log({resp});
+      navigation.navigate('Login')
     } catch (error) {
       console.log({error});
     }
-    
-    console.log("it worked")
   }
 
   return (
     <ScrollView>
       <Background>
-      <Logo />
-      <Header>Crear cuenta</Header>
-      <TextInput
-        label="DNI"
-        returnKeyType="next"
-        value={dni.value}
-        onChangeText={(text: string) => setDni({ value: text, error: '' })}
-        error={!!dni.error}
-        errorText={dni.error}
-      />
-      <TextInput
-        label="Nombre"
-        returnKeyType="next"
-        value={name.value}
-        onChangeText={(text: string) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
-      />
-      <TextInput
-        label="Número"
-        returnKeyType="next"
-        value={phone.value}
-        onChangeText={(text: string) => setPhone({ value: text, error: '' })}
-        error={!!phone.error}
-        errorText={phone.error}
-      />
-      <TextInput
-        label="Cumpleaños"
-        returnKeyType="next"
-        value={birthDay.value}
-        onChangeText={(text: string) => setBirthday({ value: text, error: '' })}
-        error={!!birthDay.error}
-        errorText={birthDay.error}
-      />
-      <TextInput
-        label="Correo electronico"
-        returnKeyType="next"
-        value={email.value}
-        onChangeText={(text: string) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
-        autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
-      />
-      <TextInput
-        label="Contraseña"
-        returnKeyType="done"
-        value={password.value}
-        onChangeText={(text: string) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
-        secureTextEntry
-      />
+      <Card wrapperStyle={{width:300, alignItems:"center"}} containerStyle={{borderRadius:30}}>
+        <CardImage source={require('../assets/car.png')} style={{width:100, height:100}}></CardImage>
+        <CardImage source={require('../assets/texto_oficial.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
+        <TextInput
+          label="DNI"
+          returnKeyType="next"
+          value={dni.value}
+          onChangeText={(text: string) => setDni({ value: text, error: '' })}
+          error={!!dni.error}
+          errorText={dni.error}
+        />
+        <TextInput
+          label="Nombre"
+          returnKeyType="next"
+          value={name.value}
+          onChangeText={(text: string) => setName({ value: text, error: '' })}
+          error={!!name.error}
+          errorText={name.error}
+        />
+        <TextInput
+          label="Número"
+          returnKeyType="next"
+          value={phone.value}
+          onChangeText={(text: string) => setPhone({ value: text, error: '' })}
+          error={!!phone.error}
+          errorText={phone.error}
+        />
+        <TextInput
+          label="Fecha de nacimiento"
+          returnKeyType="next"
+          value={birthDay.value}
+          onChangeText={(text: string) => setBirthday({ value: text, error: '' })}
+          error={!!birthDay.error}
+          errorText={birthDay.error}
+        />
+        <TextInput
+          label="Correo electronico"
+          returnKeyType="next"
+          value={email.value}
+          onChangeText={(text: string) => setEmail({ value: text, error: '' })}
+          error={!!email.error}
+          errorText={email.error}
+          autoCapitalize="none"
+          autoCompleteType="email"
+          textContentType="emailAddress"
+          keyboardType="email-address"
+        />
+        <TextInput
+          label="Contraseña"
+          returnKeyType="done"
+          value={password.value}
+          onChangeText={(text: string) => setPassword({ value: text, error: '' })}
+          error={!!password.error}
+          errorText={password.error}
+          secureTextEntry
+        />
+        <Button
+          mode="contained"
+          onPress={onSignUpPressed}
+          style={{marginTop:24, backgroundColor:'#C8013C'}}
+          >
+          REGISTRATE
+        </Button>
+      </Card>
+      <Divider style={{height:20}}></Divider>
+      <Text>Ya tienes una cuenta? </Text>
       <Button
-        mode="contained"
-        onPress={onSignUpPressed}
-        style={{ marginTop: 24 }}
-        >
-        Sign Up
+          mode="contained"
+          onPress={() => navigation.replace('Login')}
+          style={{marginTop:24, backgroundColor:'#131E60'}}
+          >
+          INGRESAR
       </Button>
-      <View style={styles.row}>
-        <Text>Ya tienes una cuenta? </Text>
-        <TouchableOpacity onPress={() => navigation.replace('Login')}>
-          <Text style={styles.link}>Login</Text>
-        </TouchableOpacity>
-      </View>
     </Background>
     </ScrollView>
   )
@@ -140,10 +139,14 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 4,
   },
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
   },
+  TextInput: {
+    width: 300,
+  }
 })
