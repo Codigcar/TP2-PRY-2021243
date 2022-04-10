@@ -18,11 +18,26 @@ import NfcManager, {
 } from 'react-native-nfc-manager';
 import Toast from 'react-native-toast-message';
 import fetchWithToken from '../utils/fetchCustom';
+import Geocoder from 'react-native-geocoder';
 
-const ModalConnectNFC = ({modalVisible, setModalVisible, latitude, longitude}: any) => {
+export interface IAccident {
+  altitude: string;
+  dateCreated: string;
+  latitude: string;
+  owner: string;
+  phone: string;
+  plate: string;
+  user: string;
+}
+
+const ModalConnectNFC = ({
+  modalVisible,
+  setModalVisible,
+  latitude,
+  longitude,
+}: any) => {
   useEffect(() => {
     if (modalVisible) {
-      console.log('useEffect');
       readNdef();
     }
     return () => {
@@ -50,24 +65,61 @@ const ModalConnectNFC = ({modalVisible, setModalVisible, latitude, longitude}: a
       if (tag) {
         cancelNfcScan();
         showToast();
-        fetchWithToken(
-          'api/accidents',
-          {
-            latitude: latitude,
-            altitude: longitude,
-            dateCreated: Date.now(),
-            plate: Placa,
-            owner: Nombre,
-            phone: Celular,
-            user: '39633582-1660-4ac2-addf-598d7f9784b8',
-          },
-          'POST',
-        );
+
+        // Geocoder.fallbackToGoogle("AIzaSyCSSWk22bmyHrcFrIZFOjFq5XiY-LLGXfQ");
+        // let ret = await Geocoder.geocodePosition({lat:latitude, lng:longitude});
+        // let adddres = (ret[0].formatteAddress);
+        // console.log({adddres});
+
+        // Position Geocoding
+        var NY = {
+          lat: latitude,
+          lng: longitude,
+        };
+
+        // Geocoder.fallbackToGoogle("AIzaSyCSSWk22bmyHrcFrIZFOjFq5XiY-LLGXfQ");
+
+        // let ret = await Geocoder.geocodePosition({
+        //   lat: latitude,
+        //   lng: longitude,
+        // });
+        // you get the same results
+
+        Geocoder.geocodePosition(NY)
+          .then((res:any) => {
+            // res is an Array of geocoding object (see below)
+            console.log(res);
+            console.log('address', res[0].formattedAddress);
+            
+          })
+          .catch(err => console.log(err));
+
+        // Address Geocoding
+        // Geocoder.geocodeAddress('New York')
+        //   .then(res => {
+        //     // res is an Array of geocoding object (see below)
+        //     console.log({res});
+        //   })
+        //   .catch(err => console.log(err));
+
+        // const body: IAccident = {
+        //   latitude: latitude.toString(),
+        //   altitude: longitude.toString(),
+        //   dateCreated: new Date().toISOString(),
+        //   plate: Placa,
+        //   owner: Nombre,
+        //   phone: Celular,
+        //   user: '39633582-1660-4ac2-addf-598d7f9784b8',
+        // };
+
+        // console.log({body});
+        // const resp = await fetchWithToken('api/accidents', body, 'POST');
+        // const data = await resp.json();
+        // console.log({data});
       }
     } catch (ex) {
       console.warn('Oops!', JSON.stringify(ex));
     } finally {
-      // stop the nfc scanning
       NfcManager.cancelTechnologyRequest();
     }
   }
@@ -121,7 +173,6 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'flex-end',
-    // alignItems: "center",
     marginTop: 22,
   },
   modalView: {

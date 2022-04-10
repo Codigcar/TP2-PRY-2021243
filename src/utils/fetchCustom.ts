@@ -1,5 +1,4 @@
-
-import {APP_API} from "@env";
+import {APP_API} from '@env';
 const baseUrl = `${APP_API}`;
 
 const fetchWithToken = (

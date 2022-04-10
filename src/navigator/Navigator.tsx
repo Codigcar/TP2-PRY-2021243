@@ -13,6 +13,7 @@ import AccidentsDetailScreen from '../pages/AccidentsDetailScreen';
 import { AccidentsFinishedScreen } from '../pages/AccidentsFinishedScreen';
 import { Styles } from '../assets/css/Styles';
 import MapUserScreen from '../pages/user/MapUserScreen';
+import { AccidentsNewsUserScreen } from '../pages/user/AccidentsNewsUserScreen';
 
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
@@ -82,7 +83,7 @@ export const PoliceBottomNavigator = () => {
       sceneAnimationEnabled={true}
     >
       <Tab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
-      <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={StackNavigatorAccNews} />
+      <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={PoliceStackNavigatorAccNews} />
       <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={StackNavigatorAccFinished} />
     </Tab.Navigator>
   );
@@ -124,12 +125,12 @@ export const UserBottomNavigator = () => {
       sceneAnimationEnabled={true}
     >
       <UserTab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
-      <UserTab.Screen name="Accidents" options={{ title: 'Recientes' }} component={StackNavigatorAccNews} />
+      <UserTab.Screen name="Accidents" options={{ title: 'Recientes' }} component={UserStackNavigatorAccNews} />
     </UserTab.Navigator>
   );
 }
 
-export const StackNavigatorAccNews = () => {
+export const PoliceStackNavigatorAccNews = () => {
   return (
     <StackV2.Navigator
       initialRouteName="AccidentsScreen"
@@ -149,6 +150,32 @@ export const StackNavigatorAccNews = () => {
     >
       <StackV2.Screen name="AccidentsScreen" component={AccidentsNewsScreen} />
       <StackV2.Screen name="AccidentDetail" options={{
+        title: 'Detalle del Accidente',
+      }} component={AccidentsDetailScreen} />
+    </StackV2.Navigator>
+  )
+}
+
+export const UserStackNavigatorAccNews = () => {
+  return (
+    <StackV2.Navigator
+      initialRouteName="AccidentsUserScreen"
+      screenOptions={{
+        cardStyle: {
+          backgroundColor: 'white'
+        },
+        headerShown: true,
+        title: 'Accidentes',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          elevation: 0,
+          borderBottomWidth: 3,
+          borderBottomColor: '#e6e6e6',
+        },
+      }}
+    >
+      <StackV2.Screen name="AccidentsUserScreen" component={AccidentsNewsUserScreen} />
+      <StackV2.Screen name="AccidentDetailUser" options={{
         title: 'Detalle del Accidente',
       }} component={AccidentsDetailScreen} />
     </StackV2.Navigator>
