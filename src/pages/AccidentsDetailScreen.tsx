@@ -6,6 +6,7 @@ import { Button } from 'react-native-elements';
 import CModal from '../components/CModal';
 import fetchWithToken from '../utils/fetchCustom';
 import { io } from "socket.io-client";
+import {APP_API, APP_API_SOCKET} from "@env";
 
 
 const AccidentsDetailScreen = () => {
@@ -23,7 +24,7 @@ const AccidentsDetailScreen = () => {
             const resp = await sol.json();
             console.log({ resp });
             if (resp?.id) {
-                socketRef.current = io('http://10.0.2.2:3001');
+                socketRef.current = io(`${APP_API_SOCKET}`);
                 socketRef.current.emit('accidents-taken', { id: 'fbeef40a-dd8f-46ac-a72d-aef02f6d5b77' })
             }
         } catch (error) {

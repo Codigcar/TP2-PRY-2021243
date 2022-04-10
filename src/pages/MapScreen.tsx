@@ -5,6 +5,7 @@ import { Map } from '../components/Map';
 import { io } from "socket.io-client";
 import fetchWithToken from '../utils/fetchCustom';
 import { PermissionsContext } from '../context/PermissionsContext';
+import {APP_API, APP_API_SOCKET} from "@env";
 
 export const MapScreen = () => {
 
@@ -15,7 +16,7 @@ export const MapScreen = () => {
   useEffect(() => {
     
     fetchListAccidents().then((resp: any) => setMarkers(resp));
-    socketRef.current = io('http://10.0.2.2:3001');
+    socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
       setMarkers((oldArray: any) => [...oldArray, data]);
     })

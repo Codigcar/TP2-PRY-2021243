@@ -7,6 +7,7 @@ import fetchWithToken from '../utils/fetchCustom';
 import { io } from "socket.io-client";
 import { Styles } from '../assets/css/Styles';
 import Toast from 'react-native-toast-message';
+import {APP_API_SOCKET} from "@env";
 
 interface Props extends StackScreenProps<any, any> { }
 
@@ -36,7 +37,7 @@ export const AccidentsNewsScreen = ({ navigation }: Props) => {
 
   useEffect(() => {
     fetchListAccidents().then((resp: any) => setListAccidents(resp));
-    socketRef.current = io('http://10.0.2.2:3001');
+    socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
       console.log({ data });
       showToast();

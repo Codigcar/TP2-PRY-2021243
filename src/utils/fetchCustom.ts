@@ -1,5 +1,6 @@
-// const baseUrl = process.env.REACT_APP_API_URL;
-const baseUrl = 'http://10.0.2.2:3000';
+
+import {APP_API} from "@env";
+const baseUrl = `${APP_API}`;
 
 const fetchWithToken = (
   endpoint: string,

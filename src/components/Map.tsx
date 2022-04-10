@@ -37,15 +37,14 @@ export const Map = ({ markers, user = "admin" }: Props) => {
             center: { latitude, longitude }
         });
     }
-    console.log('[Markersv1]: ', initialPosition.latitude);
-    console.log('[Markersv2]: ', initialPosition.longitude);
+    console.log('[latitude]: ', initialPosition.latitude);
+    console.log('[longitude]: ', initialPosition.longitude);
 
     if (!hasLocation) {
         return <LoadingScreen />
     }
 
     const modalScanNFC = () => {
-        console.log('dale');
         setModalVisible(true);
     }
 
@@ -114,40 +113,7 @@ export const Map = ({ markers, user = "admin" }: Props) => {
                 buttonStyle={{ backgroundColor: Styles.colors.primary }}
                 titleStyle={{ paddingVertical: 5 }}
             />
-            {/* <Fab
-                iconName="compass-outline"
-                onPress={centerPosition}
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20
-                }}
-            /> */}
-
-          {/*   <Modal transparent={false} visible={true}>
-                <View style={[styles.wrapper]}>
-                    <View style={{ flex: 1 }} />
-                    <Animated.View style={[styles.prompt, promptAnimStyle]}>
-                        <View
-                            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../assets/images/nfc-512.png')}
-                                style={{ width: 120, height: 120, padding: 20 }}
-                                resizeMode="contain"
-                            />
-
-                            <Text>Listo para scanear tag NFC</Text>
-                        </View>
-
-                        <Button onPress={cancelNfcScan}>
-                            CANCEL
-                        </Button>
-                    </Animated.View>
-
-                    <Animated.View style={[styles.promptBg, bgAnimStyle]} />
-                </View>
-            </Modal> */}
-            <ModalConnectNFC modalVisible={modalVisible} setModalVisible={setModalVisible} />
+            <ModalConnectNFC modalVisible={modalVisible} setModalVisible={setModalVisible} latitude={initialPosition.latitude} longitude={initialPosition.longitude} />
         </>
 
     )
@@ -168,8 +134,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         left: 0,
-        // width: '100%',
-        // height: '100%',
         zIndex: 1,
     },
     prompt: {
