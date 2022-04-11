@@ -14,28 +14,14 @@ import {APP_API, APP_API_SOCKET} from '@env';
 import {Styles} from '../../assets/css/Styles';
 import fetchWithToken from '../../utils/fetchCustom';
 import CModal from '../../components/CModal';
-import { IAccident } from '../../components/ModalConnectNFC';
+import {IAccident} from '../../components/ModalConnectNFC';
 
-const AccidentsDetailUserScreen = ({route:{params}}:any) => {
-  
+const AccidentsDetailUserScreen = ({route: {params}}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [accidentDetail, setAccidentDetail] = useState<any>({});
 
   useEffect(() => {
-    // setAccidentDetail({
-    //   id: '11530061-d0e0-4c5c-9e63-220248eace33',
-    //   latitude: '-12.18995545',
-    //   longitude: '-76.99422841',
-    //   status: true,
-    //   dateCreated: '2022-04-10T22:46:38.617Z',
-    //   plate: 'APU-812',
-    //   owner: 'Carlos Castilla',
-    //   phone: '946100691',
-    //   description: null,
-    //   conclusion: null,
-    //   address: 'Chorrillos, Vista Alegre De Villa, Cercado de Lima 15057, Perú',
-    // });
-    setAccidentDetail(params.user)
+    setAccidentDetail(params.user);
   }, []);
 
   return (
@@ -71,7 +57,11 @@ const AccidentsDetailUserScreen = ({route:{params}}:any) => {
               borderRadius: 20,
             }}
             editable={false}
-            value={ accidentDetail.description !== null ? accidentDetail.description : 'Descripción aún no registrado...'}
+            value={
+              accidentDetail.description !== null
+                ? accidentDetail.description
+                : 'Descripción aún no registrado...'
+            }
           />
           <Text style={styles.titleInput}>Conclusión</Text>
           <TextInput
@@ -83,7 +73,11 @@ const AccidentsDetailUserScreen = ({route:{params}}:any) => {
               borderRadius: 20,
             }}
             editable={false}
-            value={ accidentDetail.conclusion !== null ? accidentDetail.conclusion : 'Conclusión aún no registrado...'}
+            value={
+              accidentDetail.conclusion !== null
+                ? accidentDetail.conclusion
+                : 'Conclusión aún no registrado...'
+            }
           />
         </View>
       </View>

@@ -49,65 +49,6 @@ const ModalTakeAccident = ({modalVisible, setModalVisible, user, navigation}: an
     // };
   }, [modalVisible]);
 
-  //   async function readNdef() {
-  //     try {
-  //       await NfcManager.requestTechnology([NfcTech.Ndef]);
-  //       const tag = await NfcManager.getTag();
-
-  //       const tagNombre: any = tag?.ndefMessage[0]?.payload;
-  //       const tagPlaca: any = tag?.ndefMessage[1]?.payload;
-  //       const tagCelular: any = tag?.ndefMessage[2]?.payload;
-
-  //       let Nombre = Ndef.text.decodePayload(tagNombre);
-  //       let Placa = Ndef.text.decodePayload(tagPlaca);
-  //       let Celular = Ndef.text.decodePayload(tagCelular);
-
-  //       let distric = '';
-  //       let address = '';
-
-  //       console.log({Nombre});
-  //       console.log({Placa});
-  //       console.log({Celular});
-
-  //       if (tag) {
-  //         cancelNfcScan();
-  //         showToast();
-
-  //         var currentLocation = {
-  //           lat: latitude,
-  //           lng: longitude,
-  //         };
-
-  //         const respGeo = await Geocoder.geocodePosition(currentLocation);
-  //         try {
-  //           distric = await respGeo[1].locality;
-  //           address = await respGeo[2].formattedAddress;
-  //         } catch (error) {
-  //           console.error(error);
-  //         }
-
-  //         const body: IAccident = {
-  //           latitude: latitude.toString(),
-  //           longitude: longitude.toString(),
-  //           dateCreated: new Date().toISOString(),
-  //           plate: Placa,
-  //           owner: Nombre,
-  //           phone: Celular,
-  //           user: `${USER_ID}`,
-  //           address: distric + ', ' + address,
-  //         };
-
-  //         socketRef.current = io(`${APP_API_SOCKET}`);
-  //         socketRef.current.emit('accidents', body);
-
-  //       }
-  //     } catch (ex) {
-  //       console.warn('Oops!', JSON.stringify(ex));
-  //     } finally {
-  //       NfcManager.cancelTechnologyRequest();
-  //     }
-  //   }
-
   const acceptedAccident = (id: string) => {
     socketRef.current.emit('accidents-taken', {id: id, userPolice: POLICE_ID});
     navigation.navigate('AccidentDetailScreen');

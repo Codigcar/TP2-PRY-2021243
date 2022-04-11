@@ -24,6 +24,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
   const isActive = useRef<any>(false);
 
   useEffect(() => {
+    console.log('AccidentsFinishedScreen');
     fetchListAccidents().then((resp: any) => setListAccidents(resp));
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
@@ -54,7 +55,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
         {(item.status == 1 || item.status == 2) && (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('AccidentDetail')}>
+            onPress={() => navigation.navigate('AccidentDetail',{user: item})}>
             <View style={styles.flexRow}>
               <View style={styles.avatar}>
                 <Avatar

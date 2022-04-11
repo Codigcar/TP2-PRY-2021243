@@ -1,115 +1,211 @@
-import React, { useRef, useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { Avatar } from 'react-native-elements';
-import { Styles } from '../assets/css/Styles';
-import { Button } from 'react-native-elements';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from 'react-native';
+import {Avatar, Input} from 'react-native-elements';
+import {Styles} from '../assets/css/Styles';
+import {Button} from 'react-native-elements';
 import CModal from '../components/CModal';
 import fetchWithToken from '../utils/fetchCustom';
-import { io } from "socket.io-client";
-import {APP_API, APP_API_SOCKET} from "@env";
+import {io} from 'socket.io-client';
+import {APP_API, APP_API_SOCKET} from '@env';
+import {validateAll} from 'indicative/validator';
+import {LoadingScreen} from './LoadingScreen';
 
+const AccidentsDetailScreen = ({route: {params}, navigation}: any) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const socketRef = useRef<any>();
+  const [accidentDetail, setAccidentDetail] = useState<any>({});
 
-const AccidentsDetailScreen = () => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const socketRef = useRef<any>();
+  const [description, setDescription] = useState('');
+  const [conclusion, setConclusion] = useState('');
+  const [SignUpErrors, setSignUpErrors] = useState<any>({});
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const updateRegiter = async () => {
-        setModalVisible(true);
-        const data: any = {
-            "description": 'description',
-            "conclusion": 'conclusion'
-        }
-        try {
-            const sol = await fetchWithToken(`api/accidents/fbeef40a-dd8f-46ac-a72d-aef02f6d5b77`, data, 'PUT');
-            const resp = await sol.json();
-            console.log({ resp });
-            if (resp?.id) {
-                socketRef.current = io(`${APP_API_SOCKET}`);
-                socketRef.current.emit('accidents-taken', { id: 'fbeef40a-dd8f-46ac-a72d-aef02f6d5b77' })
-            }
-        } catch (error) {
-            console.error({error});
-            
-        }
+  useEffect(() => {
+    console.log({params});
+    
+    setAccidentDetail(params.user);
+    setDescription(params.user.description);
+    setConclusion(params.user.conclusion);
+  }, []);
 
+  const updatedAccident = async (accident: any) => {
+    const rules = {
+      description: 'required|string',
+      conclusion: 'required|string',
     };
 
-    return (
+    const data = {
+      description: description,
+      conclusion: conclusion,
+    };
+
+    const messages = {
+      required: 'Campo requerido',
+    };
+
+    console.log({accident});
+
+    validateAll(data, rules, messages)
+      .then(async () => {
+        setLoading(true);
+        const body: any = {
+          status: 2,
+          description,
+          conclusion,
+          userPolice: accident.userPolice,
+        };
+        try {
+          console.log({body});
+          const data = await fetchWithToken(
+            `api/accidents/${accident.id}`,
+            body,
+            'PUT',
+          );
+          const resp = await data.json();
+          console.log({resp});
+          setLoading(false);
+          // navigation.goBack();
+          // navigation.navigate('AccidentsFinishedScreen')
+          navigation.popToTop();
+        } catch (error) {
+          console.error({error});
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        let formatError: any = {};
+        console.log('ERROR: ' + JSON.stringify(err));
+        err.forEach((err: any) => {
+          formatError[err.field] = err.message;
+        });
+        setSignUpErrors(formatError);
+      });
+  };
+
+  return (
+    <>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
         <ScrollView>
-            <View style={[styles.card, modalVisible && styles.opacity]} >
-                <View style={styles.flexRow}>
-                    <View style={styles.avatar}>
-                        <Avatar
-                            rounded
-                            size={55}
-                            source={{
-                                uri:
-                                    'https://cdn2.salud180.com/sites/default/files/styles/medium/public/field/image/2020/11/mujer-22-anos-se-opera-para-no-tener-hijos.jpg',
-                            }}
-                        />
-                    </View>
-                    <View>
-                        <Text>R: Pablo Perez</Text>
-                        <Text>Ubicación: Callao 1453 Calle 2</Text>
-                        <Text>Placa: 9043-FF</Text>
-                        <Text>Fase: En proceso</Text>
-                        <Text>Propietario: Pablo Pere</Text>
-                        <Text>Teléfono: 946100691</Text>
-                    </View>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.titleInput}>Descripción</Text>
-                    <TextInput
-                        multiline={true}
-                        numberOfLines={7}
-                        style={{ borderWidth: 1, borderColor: Styles.colors.primary, borderRadius: 20 }}
-                    // onChangeText={(text) => this.setState({ text })}
-                    // value={'hola'} 
-                    />
-                    <Text style={styles.titleInput} >Conclusión</Text>
-                    <TextInput
-                        multiline={true}
-                        numberOfLines={7}
-                        style={{ borderWidth: 1, borderColor: Styles.colors.primary, borderRadius: 20 }}
-                    // onChangeText={(text) => this.setState({ text })}
-                    // value={'hola'} 
-                    />
-
-                    <Button
-                        title="Guardar registro"
-                        buttonStyle={{ backgroundColor: Styles.colors.primary, marginTop: 30 }}
-                        onPress={updateRegiter}
-                    />
-                </View>
+          <View style={[styles.card, modalVisible && styles.opacity]}>
+            <View style={styles.flexRow}>
+              <View style={styles.avatar}>
+                <Avatar
+                  rounded
+                  size={55}
+                  source={{
+                    uri: 'https://cdn2.salud180.com/sites/default/files/styles/medium/public/field/image/2020/11/mujer-22-anos-se-opera-para-no-tener-hijos.jpg',
+                  }}
+                />
+              </View>
+              <View style={styles.info}>
+                <Text>R: {accidentDetail.owner} </Text>
+                <Text>Ubicación: {accidentDetail.address}</Text>
+                <Text>Placa: {accidentDetail.plate}</Text>
+                {accidentDetail.status == 0 && <Text>Fase: No atendido</Text>}
+                {accidentDetail.status == 1 && <Text>Fase: En proceso</Text>}
+                {accidentDetail.status == 2 && <Text>Fase: Finzaldo</Text>}
+              </View>
             </View>
-            <CModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+            <View style={styles.body}>
+              <Text style={styles.titleInput}>Descripción</Text>
+              <TextInput
+                multiline={true}
+                numberOfLines={7}
+                style={{
+                  borderWidth: 1,
+                  borderColor: Styles.colors.primary,
+                  borderRadius: 20,
+                }}
+                placeholder="Escriba una descripción"
+                value={description}
+                onChangeText={setDescription}
+              />
+              {SignUpErrors && (
+                <Text style={styles.errorStyle}>
+                  {SignUpErrors.description}
+                </Text>
+              )}
+              <Text style={styles.titleInput}>Conclusión</Text>
+              <TextInput
+                multiline={true}
+                numberOfLines={7}
+                style={{
+                  borderWidth: 1,
+                  borderColor: Styles.colors.primary,
+                  borderRadius: 20,
+                }}
+                placeholder="Escriba una conclusión"
+                value={conclusion}
+                onChangeText={setConclusion}
+              />
+              {SignUpErrors && (
+                <Text style={styles.errorStyle}>{SignUpErrors.conclusion}</Text>
+              )}
+              <Button
+                title="Guardar registro"
+                onPress={() => updatedAccident(accidentDetail)}
+                containerStyle={{
+                  borderRadius: 10,
+                  width: '100%',
+                  marginBottom: 10,
+                  marginTop: 40,
+                }}
+                buttonStyle={{backgroundColor: Styles.colors.primary}}
+                titleStyle={{paddingVertical: 5}}
+              />
+            </View>
+          </View>
+          <CModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+          />
         </ScrollView>
-    )
-}
+      )}
+    </>
+  );
+};
 const styles = StyleSheet.create({
-    card: {
-        backgroundColor: 'white',
-        paddingVertical: 20,
-    },
-    avatar: {
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    flexRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly'
-    },
-    body: {
-        marginHorizontal: 20
-    },
-    titleInput: {
-        marginVertical: 15,
-        fontWeight: 'bold',
-        fontSize: 15
-    },
-    opacity: {
-        opacity: .4
-    }
-})
+  card: {
+    backgroundColor: 'white',
+    paddingVertical: 20,
+  },
+  avatar: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: '25%',
+  },
+  info: {
+    flex: 1,
+  },
+  flexRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  body: {
+    marginHorizontal: 20,
+  },
+  titleInput: {
+    marginVertical: 15,
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  opacity: {
+    opacity: 0.4,
+  },
+  errorStyle: {
+    color: '#ff0000',
+    textAlign: 'right',
+    paddingRight: 2,
+  },
+});
 
-export default AccidentsDetailScreen
+export default AccidentsDetailScreen;
