@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
-import { PermissionContext } from '../context/PermissionsContext';
 import { check, PERMISSIONS, PermissionStatus, request } from 'react-native-permissions';
+import { PermissionsContext } from '../context/PermissionsContext';
 
 
 export const PermissionsScreen = () => {
 
-  const { permissions, askLocationPermission } = useContext(PermissionContext);
+  const { permissions, askLocationPermission } = useContext(PermissionsContext);
 
   return (
     <View style={styles.container} >

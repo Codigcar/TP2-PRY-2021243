@@ -14,6 +14,7 @@ import { AccidentsFinishedScreen } from '../pages/AccidentsFinishedScreen';
 import { Styles } from '../assets/css/Styles';
 import MapUserScreen from '../pages/user/MapUserScreen';
 import { AccidentsNewsUserScreen } from '../pages/user/AccidentsNewsUserScreen';
+import AccidentsDetailUserScreen from '../pages/user/AccidentsDetailUserScreen';
 
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
@@ -40,8 +41,8 @@ export const Navigator = () => {
     >
       {
         (permissions.locationStatus === 'granted')
-        // ? <Stack.Screen name="PoliceBottomNavigator" component={PoliceBottomNavigator} ></Stack.Screen>
-          ? <Stack.Screen name="UserBottomNavigator" component={UserBottomNavigator} ></Stack.Screen>
+        ? <Stack.Screen name="PoliceBottomNavigator" component={PoliceBottomNavigator} ></Stack.Screen>
+          // ? <Stack.Screen name="UserBottomNavigator" component={UserBottomNavigator} ></Stack.Screen>
           : <Stack.Screen name="PermissionScreen" component={PermissionsScreen} ></Stack.Screen>
       }
     </Stack.Navigator>
@@ -124,7 +125,7 @@ export const UserBottomNavigator = () => {
       }}
       sceneAnimationEnabled={true}
     >
-      <UserTab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
+      <UserTab.Screen name="Home" options={{ title: 'MapaUser' }} component={MapUserScreen} />
       <UserTab.Screen name="Accidents" options={{ title: 'Recientes' }} component={UserStackNavigatorAccNews} />
     </UserTab.Navigator>
   );
@@ -149,7 +150,7 @@ export const PoliceStackNavigatorAccNews = () => {
       }}
     >
       <StackV2.Screen name="AccidentsScreen" component={AccidentsNewsScreen} />
-      <StackV2.Screen name="AccidentDetail" options={{
+      <StackV2.Screen name="AccidentDetailScreen" options={{
         title: 'Detalle del Accidente',
       }} component={AccidentsDetailScreen} />
     </StackV2.Navigator>
@@ -175,9 +176,9 @@ export const UserStackNavigatorAccNews = () => {
       }}
     >
       <StackV2.Screen name="AccidentsUserScreen" component={AccidentsNewsUserScreen} />
-      <StackV2.Screen name="AccidentDetailUser" options={{
+      <StackV2.Screen name="AccidentDetailUserScreen" options={{
         title: 'Detalle del Accidente',
-      }} component={AccidentsDetailScreen} />
+      }} component={AccidentsDetailUserScreen} />
     </StackV2.Navigator>
   )
 }

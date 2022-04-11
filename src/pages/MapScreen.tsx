@@ -19,6 +19,8 @@ export const MapScreen = () => {
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
       setMarkers((oldArray: any) => [...oldArray, data]);
+      console.log({data});
+      
     })
     
     socketRef.current.on('accidents-taken', (data: any) => {

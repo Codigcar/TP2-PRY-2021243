@@ -207,6 +207,8 @@ dependencies {
 
     compile project(':react-native-geocoder')
 
+    implementation project(':react-native-svg')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }

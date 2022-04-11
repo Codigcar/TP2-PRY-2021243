@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Modal,
@@ -19,15 +19,21 @@ import NfcManager, {
 import Toast from 'react-native-toast-message';
 import fetchWithToken from '../utils/fetchCustom';
 import Geocoder from 'react-native-geocoder';
+import {APP_API_SOCKET} from '@env';
+import {io} from 'socket.io-client';
+import { USER_ID } from '@env' 
+
 
 export interface IAccident {
-  altitude: string;
+  longitude: string;
   dateCreated: string;
   latitude: string;
   owner: string;
   phone: string;
   plate: string;
   user: string;
+  address: string;
+
 }
 
 const ModalConnectNFC = ({
@@ -36,6 +42,8 @@ const ModalConnectNFC = ({
   latitude,
   longitude,
 }: any) => {
+  const socketRef = useRef<any>();
+
   useEffect(() => {
     if (modalVisible) {
       readNdef();
@@ -58,6 +66,9 @@ const ModalConnectNFC = ({
       let Placa = Ndef.text.decodePayload(tagPlaca);
       let Celular = Ndef.text.decodePayload(tagCelular);
 
+      let distric = '';
+      let address = '';
+
       console.log({Nombre});
       console.log({Placa});
       console.log({Celular});
@@ -66,56 +77,33 @@ const ModalConnectNFC = ({
         cancelNfcScan();
         showToast();
 
-        // Geocoder.fallbackToGoogle("AIzaSyCSSWk22bmyHrcFrIZFOjFq5XiY-LLGXfQ");
-        // let ret = await Geocoder.geocodePosition({lat:latitude, lng:longitude});
-        // let adddres = (ret[0].formatteAddress);
-        // console.log({adddres});
-
-        // Position Geocoding
-        var NY = {
+        var currentLocation = {
           lat: latitude,
           lng: longitude,
         };
 
-        // Geocoder.fallbackToGoogle("AIzaSyCSSWk22bmyHrcFrIZFOjFq5XiY-LLGXfQ");
+        const respGeo = await Geocoder.geocodePosition(currentLocation);
+        try {
+          distric = await respGeo[1].locality;
+          address = await respGeo[2].formattedAddress;
+        } catch (error) {
+          console.error(error);
+        }
 
-        // let ret = await Geocoder.geocodePosition({
-        //   lat: latitude,
-        //   lng: longitude,
-        // });
-        // you get the same results
+        const body: IAccident = {
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+          dateCreated: new Date().toISOString(),
+          plate: Placa,
+          owner: Nombre,
+          phone: Celular,
+          user: `${USER_ID}`,
+          address: distric + ', ' + address,
+        };
 
-        Geocoder.geocodePosition(NY)
-          .then((res:any) => {
-            // res is an Array of geocoding object (see below)
-            console.log(res);
-            console.log('address', res[0].formattedAddress);
-            
-          })
-          .catch(err => console.log(err));
+        socketRef.current = io(`${APP_API_SOCKET}`);
+        socketRef.current.emit('accidents', body);
 
-        // Address Geocoding
-        // Geocoder.geocodeAddress('New York')
-        //   .then(res => {
-        //     // res is an Array of geocoding object (see below)
-        //     console.log({res});
-        //   })
-        //   .catch(err => console.log(err));
-
-        // const body: IAccident = {
-        //   latitude: latitude.toString(),
-        //   altitude: longitude.toString(),
-        //   dateCreated: new Date().toISOString(),
-        //   plate: Placa,
-        //   owner: Nombre,
-        //   phone: Celular,
-        //   user: '39633582-1660-4ac2-addf-598d7f9784b8',
-        // };
-
-        // console.log({body});
-        // const resp = await fetchWithToken('api/accidents', body, 'POST');
-        // const data = await resp.json();
-        // console.log({data});
       }
     } catch (ex) {
       console.warn('Oops!', JSON.stringify(ex));
