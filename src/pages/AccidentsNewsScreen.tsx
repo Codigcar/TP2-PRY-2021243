@@ -19,6 +19,7 @@ import {APP_API_SOCKET, POLICE_ID} from '@env';
 import ModalTakeAccident from './police/ModalTakeAccident';
 import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
 import {LoadingScreen} from './LoadingScreen';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -139,49 +140,53 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   };
 
   return (
-    <View>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Recientes</Text>
+    <SafeAreaView style={{flex:1}}>
+      <View>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Recientes</Text>
+        </View>
+        <Divider style={styles.dividerTitleLineRed} />
+
+        <SafeSearchBar
+          containerStyle={{
+            backgroundColor: '#fff',
+            borderTopColor: '#FFF',
+            borderBottomColor: '#FFF',
+            paddingHorizontal: 0,
+            ...Platform.select({
+              ios: {
+                paddingVertical: 0,
+                borderRadius: 10,
+              },
+            }),
+          }}
+          inputContainerStyle={styles.estiloBarraBusqueda}
+          onChangeText={(text: string) => searchFilterFunction(text)}
+          onClear={() => searchFilterFunction('')}
+          placeholder="Buscar por DNI..."
+          value={search}
+          platform={'android'}
+        />
+
+        {filteredDataSource.length === 0 ? (
+          <View
+            style={{
+              height: '80%',
+              // flex:1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text>No se encontraron alertas con este DNI</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredDataSource}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={rendeItem}
+          />
+        )}
       </View>
-      <Divider style={styles.dividerTitleLineRed} />
-
-      <SafeSearchBar
-        containerStyle={{
-          backgroundColor: '#fff',
-          borderTopColor: '#FFF',
-          borderBottomColor: '#FFF',
-          paddingHorizontal: 0,
-          ...Platform.select({
-            ios: {
-              paddingVertical: 0,
-              borderRadius: 10,
-            },
-          }),
-        }}
-        inputContainerStyle={styles.estiloBarraBusqueda}
-        onChangeText={(text: string) => searchFilterFunction(text)}
-        onClear={() => searchFilterFunction('')}
-        placeholder="DNI"
-        value={search}
-        platform={'android'}
-      />
-
-      {typeof filteredDataSource === 'string' ? (
-        <LoadingScreen />
-      ) : (
-        <>
-          {filteredDataSource.length === 0 ? (
-            <Text>No se encontrador</Text>
-          ) : (
-            <FlatList
-              data={filteredDataSource}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={rendeItem}
-            />
-          )}
-        </>
-      )}
-    </View>
+    </SafeAreaView>
   );
 };
 
