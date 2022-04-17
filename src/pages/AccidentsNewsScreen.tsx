@@ -8,6 +8,7 @@ import {
   FlatList,
   Platform,
   Button,
+  SafeAreaView,
 } from 'react-native';
 import {Avatar, Divider, SearchBar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,7 +20,7 @@ import {APP_API_SOCKET, POLICE_ID} from '@env';
 import ModalTakeAccident from './police/ModalTakeAccident';
 import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
 import {LoadingScreen} from './LoadingScreen';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import CSearchBar from '../components/CSearchBar';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -29,6 +30,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   const isActive = useRef<any>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [userSelected, setUserSelected] = useState<any>({});
+  const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState<any>('');
   const [filteredDataSource, setFilteredDataSource] = useState<any>('');
@@ -55,11 +57,14 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   }, []);
 
   const fetchListAccidents = async () => {
+    setLoading(true);
     try {
       const resp = await fetchWithToken(`api/accidents/no-active`);
       const data = await resp.json();
+      setLoading(false);
       return data;
     } catch (error) {
+      setLoading(false);
       console.error({error});
     }
   };
@@ -78,8 +83,6 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   };
 
   const searchFilterFunction = (text: string) => {
-    console.log({text});
-
     if (text) {
       const newData = accidents.filter(function (item: any) {
         const itemData = item.user.dni;
@@ -95,7 +98,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
 
   const rendeItem = ({item}: any) => {
     return (
-      <>
+      <View>
         <TouchableOpacity
           style={styles.card}
           onPress={() => {
@@ -135,57 +138,31 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
           user={userSelected}
           navigation={navigation}
         />
-      </>
+      </View>
     );
   };
 
   return (
-    <SafeAreaView style={{flex:1}}>
-      <View>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>Recientes</Text>
-        </View>
-        <Divider style={styles.dividerTitleLineRed} />
-
-        <SafeSearchBar
-          containerStyle={{
-            backgroundColor: '#fff',
-            borderTopColor: '#FFF',
-            borderBottomColor: '#FFF',
-            paddingHorizontal: 0,
-            ...Platform.select({
-              ios: {
-                paddingVertical: 0,
-                borderRadius: 10,
-              },
-            }),
-          }}
-          inputContainerStyle={styles.estiloBarraBusqueda}
-          onChangeText={(text: string) => searchFilterFunction(text)}
-          onClear={() => searchFilterFunction('')}
-          placeholder="Buscar por DNI..."
-          value={search}
-          platform={'android'}
-        />
-
-        {filteredDataSource.length === 0 ? (
-          <View
-            style={{
-              height: '80%',
-              // flex:1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text>No se encontraron alertas con este DNI</Text>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <View>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Recientes</Text>
           </View>
-        ) : (
-          <FlatList
-            data={filteredDataSource}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={rendeItem}
+          <Divider style={styles.dividerTitleLineRed} />
+
+          <CSearchBar
+          accidents={accidents}
+          search={search}
+          setSearch={setSearch}
+          filteredDataSource={filteredDataSource}
+          setFilteredDataSource={setFilteredDataSource}
+          rendeItem={rendeItem}
           />
-        )}
-      </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -246,27 +223,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginLeft: 20,
     width: 50,
-  },
-  estiloBarraBusqueda: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    marginVertical: 0,
-    // borderColor: 'rgba(0,0,0,0.5)',
-    ...Platform.select({
-      ios: {},
-      android: {
-        marginLeft: 15,
-        marginRight: 15,
-        shadowOpacity: 0.39,
-        shadowRadius: 13.97,
-        elevation: 11,
-      },
-      default: {
-        shadowColor: 'rgba(0,0,0, .2)',
-        shadowOffset: {height: 0, width: 0},
-        shadowOpacity: 1,
-        shadowRadius: 1,
-      },
-    }),
   },
 });

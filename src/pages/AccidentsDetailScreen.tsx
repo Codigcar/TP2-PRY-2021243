@@ -18,6 +18,7 @@ import {APP_API, APP_API_SOCKET} from '@env';
 import {validateAll} from 'indicative/validator';
 import {LoadingScreen} from './LoadingScreen';
 import {Alert} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props extends StackScreenProps<any, any> {
   route:any
@@ -31,6 +32,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
   const [conclusion, setConclusion] = useState('');
   const [SignUpErrors, setSignUpErrors] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [userObject, setUserObject] = useState<any>({});
 
   useEffect(() => {
     fetchInitData()
@@ -39,6 +41,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
         setAccidentDetail(resp);
         setDescription(resp.description);
         setConclusion(resp.conclusion);
+        setUserObject(resp.user);
       })
       .catch(err => {
         console.error({err});
@@ -49,8 +52,6 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
   const fetchInitData = async () => {
     setLoading(true);
     try {
-      console.log('id: ', params.accidentId);
-      
       const resp = await fetchWithToken(`api/accidents/${params.accidentId}`);
       const data = await resp.json();
       console.log({data});
@@ -116,8 +117,10 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
       });
   };
 
+
+
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:'white'}} >
       {loading ? (
         <LoadingScreen />
       ) : (
@@ -137,7 +140,8 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
                 <Text>R: {accidentDetail.owner} </Text>
                 <Text>Ubicación: {accidentDetail.address}</Text>
                 <Text>Placa: {accidentDetail.plate}</Text>
-                <Text>DNI: {accidentDetail.user.dni}</Text>
+                <Text>DNI: {userObject.dni}</Text>
+                {/* <Text>{JSON.stringify(accidentDetail.user.dni)}</Text> */}
                 {accidentDetail.status == 0 && <Text>Fase: No atendido</Text>}
                 {accidentDetail.status == 1 && <Text>Fase: En proceso</Text>}
                 {accidentDetail.status == 2 && <Text>Fase: Finalizado</Text>}
@@ -200,7 +204,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
           />
         </ScrollView>
       )}
-    </>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

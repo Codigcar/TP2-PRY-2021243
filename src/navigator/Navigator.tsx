@@ -80,7 +80,7 @@ export const PoliceBottomNavigator = () => {
               iconName = 'navigate';
               break;
             case 'Accidents':
-              iconName = 'list';
+              iconName = 'car-outline';
               break;
             case 'Accidents2':
               iconName = 'list';
@@ -88,7 +88,7 @@ export const PoliceBottomNavigator = () => {
           }
 
           return (
-            <Icon name={iconName} size={20} color={Styles.colors.primary} />
+            <Icon name={iconName} size={25} color={Styles.colors.primary} />
           );
         },
       })}

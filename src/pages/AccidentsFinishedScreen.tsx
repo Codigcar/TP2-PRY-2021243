@@ -8,14 +8,18 @@ import {
   FlatList,
   Platform,
   Alert,
+  SafeAreaView,
 } from 'react-native';
-import {Avatar, Divider} from 'react-native-elements';
+import {Avatar, Divider, SearchBar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import fetchWithToken from '../utils/fetchCustom';
 import {io} from 'socket.io-client';
 import {Styles} from '../assets/css/Styles';
 
 import {APP_API, APP_API_SOCKET} from '@env';
+import {LoadingScreen} from './LoadingScreen';
+import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
+import CSearchBar from '../components/CSearchBar';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -23,14 +27,18 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
   const socketRef = useRef<any>();
   const [accidents, setListAccidents] = useState<any>([]);
   const isActive = useRef<any>(false);
+  const [loading, setLoading] = useState(false);
+  const SafeSearchBar = SearchBar as unknown as React.FC<SearchBarBaseProps>;
+
+  const [search, setSearch] = useState<any>('');
+  const [filteredDataSource, setFilteredDataSource] = useState<any>('');
 
   useEffect(() => {
-    console.log('AccidentsFinishedScreen');
     fetchListAccidents()
       .then((resp: any) => setListAccidents(resp))
       .catch(err => {
         console.error({err});
-        Alert.alert('Error', "Intentelo en unos minutos por favor");
+        Alert.alert('Error', 'Intentelo en unos minutos por favor');
       });
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
@@ -45,12 +53,31 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
   }, []);
 
   const fetchListAccidents = async () => {
+    setLoading(true);
     try {
       const resp = await fetchWithToken(`api/accidents`);
       const data = await resp.json();
+      setLoading(false);
       return data;
     } catch (error) {
       console.error({error});
+      setLoading(false);
+    }
+  };
+
+  const searchFilterFunction = (text: string) => {
+    console.log({text});
+
+    if (text) {
+      const newData = accidents.filter(function (item: any) {
+        const itemData = item.user.dni;
+        return itemData.indexOf(text) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(accidents);
+      setSearch(text);
     }
   };
 
@@ -60,7 +87,9 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
         {(item.status == 1 || item.status == 2) && (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('AccidentDetailScreen', {accidentId: item.id})}>
+            onPress={() =>
+              navigation.navigate('AccidentDetailScreen', {accidentId: item.id})
+            }>
             <View style={styles.flexRow}>
               <View style={styles.avatar}>
                 <Avatar
@@ -91,17 +120,27 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
   };
 
   return (
-    <View>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Atendidos</Text>
-      </View>
-      <Divider style={styles.dividerTitleLineRed} />
-      <FlatList
-        data={accidents}
-        renderItem={rendeItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    </View>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <View>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Atendidos</Text>
+          </View>
+          <Divider style={styles.dividerTitleLineRed} />
+
+          <CSearchBar
+            accidents={accidents}
+            search={search}
+            setSearch={setSearch}
+            filteredDataSource={filteredDataSource}
+            setFilteredDataSource={setFilteredDataSource}
+            rendeItem={rendeItem}
+          />
+        </View>
+      )}
+    </SafeAreaView>
   );
 };
 
