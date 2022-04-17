@@ -15,6 +15,7 @@ import { Styles } from '../assets/css/Styles';
 import MapUserScreen from '../pages/user/MapUserScreen';
 import { AccidentsNewsUserScreen } from '../pages/user/AccidentsNewsUserScreen';
 import AccidentsDetailUserScreen from '../pages/user/AccidentsDetailUserScreen';
+import ModalTakeAccident from '../pages/police/ModalTakeAccident';
 
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
@@ -85,9 +86,76 @@ export const PoliceBottomNavigator = () => {
     >
       <Tab.Screen name="Home" options={{ title: 'Mapa' }} component={MapScreen} />
       <Tab.Screen name="Accidents" options={{ title: 'Recientes' }} component={PoliceStackNavigatorAccNews} />
-      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={StackNavigatorAccFinished} />
+      <Tab.Screen name="Accidents2" options={{ title: 'Atendidos' }} component={PoliceStackNavigatorAccFinished} />
     </Tab.Navigator>
   );
+}
+
+export const PoliceStackNavigatorAccNews = () => {
+  return (
+    <StackV2.Navigator
+      initialRouteName="AccidentsScreen"
+      screenOptions={{
+        cardStyle: {
+          backgroundColor: 'white'
+        },
+        headerShown: true,
+        title: 'Accidentes',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          elevation: 0,
+          borderBottomWidth: 3,
+          borderBottomColor: '#e6e6e6',
+        },
+      }}
+    >
+      <StackV2.Screen name="AccidentsScreen" component={AccidentsNewsScreen} />
+      <StackV2.Screen name="AccidentDetailScreen" options={{
+        headerShown: true,
+        title: 'Detalle del Accidente',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          elevation: 0,
+          borderBottomWidth: 3,
+          borderBottomColor: '#e6e6e6',
+        }
+      }} component={AccidentsDetailScreen} />
+    </StackV2.Navigator>
+  )
+}
+
+export const PoliceStackNavigatorAccFinished = () => {
+  return (
+    <StackV2.Navigator
+      initialRouteName="AccidentsFinishedScreen"
+      screenOptions={{
+        cardStyle: {
+          backgroundColor: 'white'
+        },
+        headerShown: true,
+        title: 'Accidentes',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          elevation: 0,
+          borderBottomWidth: 3,
+          borderBottomColor: '#e6e6e6',
+        },
+
+      }}
+    >
+      <StackV2.Screen name="AccidentsFinishedScreen" component={AccidentsFinishedScreen} />
+      <StackV2.Screen name="AccidentDetailScreen" options={{
+        headerShown: true,
+        title: 'Detalle del Accidente',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          elevation: 0,
+          borderBottomWidth: 3,
+          borderBottomColor: '#e6e6e6',
+        }
+      }} component={AccidentsDetailScreen} />
+    </StackV2.Navigator>
+  )
 }
 
 export const UserBottomNavigator = () => {
@@ -131,31 +199,6 @@ export const UserBottomNavigator = () => {
   );
 }
 
-export const PoliceStackNavigatorAccNews = () => {
-  return (
-    <StackV2.Navigator
-      initialRouteName="AccidentsScreen"
-      screenOptions={{
-        cardStyle: {
-          backgroundColor: 'white'
-        },
-        headerShown: true,
-        title: 'Accidentes',
-        headerTitleAlign: 'center',
-        headerStyle: {
-          elevation: 0,
-          borderBottomWidth: 3,
-          borderBottomColor: '#e6e6e6',
-        },
-      }}
-    >
-      <StackV2.Screen name="AccidentsScreen" component={AccidentsNewsScreen} />
-      <StackV2.Screen name="AccidentDetailScreen" options={{
-        title: 'Detalle del Accidente',
-      }} component={AccidentsDetailScreen} />
-    </StackV2.Navigator>
-  )
-}
 
 export const UserStackNavigatorAccNews = () => {
   return (
@@ -183,36 +226,3 @@ export const UserStackNavigatorAccNews = () => {
   )
 }
 
-export const StackNavigatorAccFinished = () => {
-  return (
-    <StackV2.Navigator
-      initialRouteName="AccidentsFinishedScreen"
-      screenOptions={{
-        cardStyle: {
-          backgroundColor: 'white'
-        },
-        headerShown: true,
-        title: 'Accidentes',
-        headerTitleAlign: 'center',
-        headerStyle: {
-          elevation: 0,
-          borderBottomWidth: 3,
-          borderBottomColor: '#e6e6e6',
-        },
-
-      }}
-    >
-      <StackV2.Screen name="AccidentsFinishedScreen" component={AccidentsFinishedScreen} />
-      <StackV2.Screen name="AccidentDetail" options={{
-        headerShown: true,
-        title: 'Detalle del Accidente',
-        headerTitleAlign: 'center',
-        headerStyle: {
-          elevation: 0,
-          borderBottomWidth: 3,
-          borderBottomColor: '#e6e6e6',
-        }
-      }} component={AccidentsDetailScreen} />
-    </StackV2.Navigator>
-  )
-}

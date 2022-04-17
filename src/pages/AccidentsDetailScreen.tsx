@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {StackScreenProps} from '@react-navigation/stack';
 import {
   StyleSheet,
   Text,
@@ -16,11 +17,15 @@ import {io} from 'socket.io-client';
 import {APP_API, APP_API_SOCKET} from '@env';
 import {validateAll} from 'indicative/validator';
 import {LoadingScreen} from './LoadingScreen';
+import {Alert} from 'react-native';
 
-const AccidentsDetailScreen = ({route: {params}, navigation}: any) => {
+interface Props extends StackScreenProps<any, any> {
+  route:any
+}
+
+const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const socketRef = useRef<any>();
-  const [accidentDetail, setAccidentDetail] = useState<any>({});
+  const [accidentDetail, setAccidentDetail] = useState<any>([]);
 
   const [description, setDescription] = useState('');
   const [conclusion, setConclusion] = useState('');
@@ -28,12 +33,34 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: any) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log({params});
-    
-    setAccidentDetail(params.user);
-    setDescription(params.user.description);
-    setConclusion(params.user.conclusion);
+    fetchInitData()
+      .then((resp: any) => {
+        console.log({resp});
+        setAccidentDetail(resp);
+        setDescription(resp.description);
+        setConclusion(resp.conclusion);
+      })
+      .catch(err => {
+        console.error({err});
+        Alert.alert('Error', 'Intentelo en unos minutos por favor');
+      });
   }, []);
+
+  const fetchInitData = async () => {
+    setLoading(true);
+    try {
+      console.log('id: ', params.accidentId);
+      
+      const resp = await fetchWithToken(`api/accidents/${params.accidentId}`);
+      const data = await resp.json();
+      console.log({data});
+      setLoading(false);
+      return data;
+    } catch (error) {
+      console.error({error});
+      setLoading(false);
+    }
+  };
 
   const updatedAccident = async (accident: any) => {
     const rules = {
@@ -112,7 +139,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: any) => {
                 <Text>Placa: {accidentDetail.plate}</Text>
                 {accidentDetail.status == 0 && <Text>Fase: No atendido</Text>}
                 {accidentDetail.status == 1 && <Text>Fase: En proceso</Text>}
-                {accidentDetail.status == 2 && <Text>Fase: Finzaldo</Text>}
+                {accidentDetail.status == 2 && <Text>Fase: Finalizado</Text>}
               </View>
             </View>
             <View style={styles.body}>
@@ -124,6 +151,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: any) => {
                   borderWidth: 1,
                   borderColor: Styles.colors.primary,
                   borderRadius: 20,
+                  paddingHorizontal:10
                 }}
                 placeholder="Escriba una descripción"
                 value={description}
@@ -142,6 +170,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: any) => {
                   borderWidth: 1,
                   borderColor: Styles.colors.primary,
                   borderRadius: 20,
+                  paddingHorizontal:10
                 }}
                 placeholder="Escriba una conclusión"
                 value={conclusion}

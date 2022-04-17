@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   Platform,
+  Alert,
 } from 'react-native';
 import {Avatar, Divider} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -25,7 +26,12 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     console.log('AccidentsFinishedScreen');
-    fetchListAccidents().then((resp: any) => setListAccidents(resp));
+    fetchListAccidents()
+      .then((resp: any) => setListAccidents(resp))
+      .catch(err => {
+        console.error({err});
+        Alert.alert('Error', "Intentelo en unos minutos por favor");
+      });
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
       console.log({data});
@@ -33,8 +39,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
     });
 
     socketRef.current.on('accidents-taken', (data: any) => {
-      setListAccidents((array: any) =>
-         [...array, data])
+      setListAccidents((array: any) => [...array, data]);
     });
     isActive.current = true;
   }, []);
@@ -55,7 +60,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
         {(item.status == 1 || item.status == 2) && (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('AccidentDetail',{user: item})}>
+            onPress={() => navigation.navigate('AccidentDetailScreen', {accidentId: item.id})}>
             <View style={styles.flexRow}>
               <View style={styles.avatar}>
                 <Avatar

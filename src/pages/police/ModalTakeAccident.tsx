@@ -51,7 +51,9 @@ const ModalTakeAccident = ({modalVisible, setModalVisible, user, navigation}: an
 
   const acceptedAccident = (id: string) => {
     socketRef.current.emit('accidents-taken', {id: id, userPolice: POLICE_ID});
-    navigation.navigate('AccidentDetailScreen');
+
+    // navigation.navigate('AccidentDetailScreen');
+    navigation.navigate('AccidentDetailScreen', {accidentId: id});
     setModalVisible(false);
   };
 

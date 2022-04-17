@@ -73,7 +73,6 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
         <TouchableOpacity
           style={styles.card}
           onPress={() => {
-            // navigation.navigate('AccidentDetailScreen');
             openModal(item);
           }}>
           <View style={styles.flexRow}>
