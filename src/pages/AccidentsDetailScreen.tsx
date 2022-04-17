@@ -137,6 +137,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
                 <Text>R: {accidentDetail.owner} </Text>
                 <Text>Ubicación: {accidentDetail.address}</Text>
                 <Text>Placa: {accidentDetail.plate}</Text>
+                <Text>DNI: {accidentDetail.user.dni}</Text>
                 {accidentDetail.status == 0 && <Text>Fase: No atendido</Text>}
                 {accidentDetail.status == 1 && <Text>Fase: En proceso</Text>}
                 {accidentDetail.status == 2 && <Text>Fase: Finalizado</Text>}

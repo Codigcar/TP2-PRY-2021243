@@ -75,6 +75,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
                 <Text>R: {item.owner}</Text>
                 <Text>Ubicación: {item.address}</Text>
                 <Text>Placa: {item.plate}</Text>
+                <Text>DNI: {item.user.dni}</Text>
                 {item.status == 0 && <Text>Fase: No atendido</Text>}
                 {item.status == 1 && <Text>Fase: En proceso</Text>}
                 {item.status == 2 && <Text>Fase: Finalizado</Text>}

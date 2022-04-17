@@ -9,7 +9,7 @@ import {
   Platform,
   Button,
 } from 'react-native';
-import {Avatar, Divider} from 'react-native-elements';
+import {Avatar, Divider, SearchBar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import fetchWithToken from '../utils/fetchCustom';
 import {io} from 'socket.io-client';
@@ -17,6 +17,8 @@ import {Styles} from '../assets/css/Styles';
 import Toast from 'react-native-toast-message';
 import {APP_API_SOCKET, POLICE_ID} from '@env';
 import ModalTakeAccident from './police/ModalTakeAccident';
+import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
+import {LoadingScreen} from './LoadingScreen';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -27,13 +29,20 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [userSelected, setUserSelected] = useState<any>({});
 
+  const [search, setSearch] = useState<any>('');
+  const [filteredDataSource, setFilteredDataSource] = useState<any>('');
+
+  const SafeSearchBar = SearchBar as unknown as React.FC<SearchBarBaseProps>;
+
   useEffect(() => {
-    fetchListAccidents().then((resp: any) => setListAccidents(resp));
+    fetchListAccidents().then((resp: any) => {
+      setListAccidents(resp);
+    });
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
       console.log({data});
       showToast();
-      setListAccidents((oldArray: any) => [...oldArray, data]);
+      setListAccidents((oldArray: any) => [data, ...oldArray]);
     });
 
     socketRef.current.on('accidents-taken', (data: any) => {
@@ -67,6 +76,22 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
     setModalVisible(true);
   };
 
+  const searchFilterFunction = (text: string) => {
+    console.log({text});
+
+    if (text) {
+      const newData = accidents.filter(function (item: any) {
+        const itemData = item.user.dni;
+        return itemData.indexOf(text) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(accidents);
+      setSearch(text);
+    }
+  };
+
   const rendeItem = ({item}: any) => {
     return (
       <>
@@ -89,6 +114,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
               <Text>R: {item.owner}</Text>
               <Text>Ubicación: {item.address}</Text>
               <Text>Placa: {item.plate}</Text>
+              <Text>DNI: {item.user.dni}</Text>
               {item.status == 0 && <Text>Fase: No atendido</Text>}
               {item.status == 1 && <Text>Fase: En proceso</Text>}
               {item.status == 2 && <Text>Fase: Finzaldo</Text>}
@@ -118,11 +144,43 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
         <Text style={styles.headerTitle}>Recientes</Text>
       </View>
       <Divider style={styles.dividerTitleLineRed} />
-      <FlatList
-        data={accidents}
-        renderItem={rendeItem}
-        keyExtractor={(item, index) => index.toString()}
+
+      <SafeSearchBar
+        containerStyle={{
+          backgroundColor: '#fff',
+          borderTopColor: '#FFF',
+          borderBottomColor: '#FFF',
+          paddingHorizontal: 0,
+          ...Platform.select({
+            ios: {
+              paddingVertical: 0,
+              borderRadius: 10,
+            },
+          }),
+        }}
+        inputContainerStyle={styles.estiloBarraBusqueda}
+        onChangeText={(text: string) => searchFilterFunction(text)}
+        onClear={() => searchFilterFunction('')}
+        placeholder="DNI"
+        value={search}
+        platform={'android'}
       />
+
+      {typeof filteredDataSource === 'string' ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          {filteredDataSource.length === 0 ? (
+            <Text>No se encontrador</Text>
+          ) : (
+            <FlatList
+              data={filteredDataSource}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={rendeItem}
+            />
+          )}
+        </>
+      )}
     </View>
   );
 };
@@ -183,5 +241,27 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginLeft: 20,
     width: 50,
+  },
+  estiloBarraBusqueda: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginVertical: 0,
+    // borderColor: 'rgba(0,0,0,0.5)',
+    ...Platform.select({
+      ios: {},
+      android: {
+        marginLeft: 15,
+        marginRight: 15,
+        shadowOpacity: 0.39,
+        shadowRadius: 13.97,
+        elevation: 11,
+      },
+      default: {
+        shadowColor: 'rgba(0,0,0, .2)',
+        shadowOffset: {height: 0, width: 0},
+        shadowOpacity: 1,
+        shadowRadius: 1,
+      },
+    }),
   },
 });
