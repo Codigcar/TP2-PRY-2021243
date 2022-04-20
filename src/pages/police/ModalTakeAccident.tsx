@@ -1,28 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Alert,
   Modal,
   StyleSheet,
   Text,
-  Pressable,
   View,
   Image,
 } from 'react-native';
 import {Button} from 'react-native-elements';
-import NfcManager, {
-  Ndef,
-  NfcError,
-  NfcEvents,
-  NfcTech,
-} from 'react-native-nfc-manager';
-import Toast from 'react-native-toast-message';
-import Geocoder from 'react-native-geocoder';
 import {io} from 'socket.io-client';
-import {USER_ID} from '@env';
 import {Styles} from '../../assets/css/Styles';
-import {SvgUri} from 'react-native-svg';
 import {APP_API_SOCKET, POLICE_ID} from '@env';
-import { StackScreenProps } from '@react-navigation/stack';
 
 export interface IAccident {
   longitude: string;
@@ -34,25 +22,13 @@ export interface IAccident {
   user: string;
   address: string;
 }
-interface Props extends StackScreenProps<any, any> {}
 
 const ModalTakeAccident = ({modalVisible, setModalVisible, user, navigation}: any) => {
   const socketRef = useRef<any>();
   socketRef.current = io(`${APP_API_SOCKET}`);
 
-  useEffect(() => {
-    // if (modalVisible) {
-    //   readNdef();
-    // }
-    // return () => {
-    //   NfcManager.cancelTechnologyRequest();
-    // };
-  }, [modalVisible]);
-
   const acceptedAccident = (id: string) => {
     socketRef.current.emit('accidents-taken', {id: id, userPolice: POLICE_ID});
-
-    // navigation.navigate('AccidentDetailScreen');
     navigation.navigate('AccidentDetailScreen', {accidentId: id});
     setModalVisible(false);
   };
@@ -81,17 +57,16 @@ const ModalTakeAccident = ({modalVisible, setModalVisible, user, navigation}: an
               flexDirection: 'row',
               justifyContent: 'space-evenly',
               backgroundColor: 'transparent',
-              width: '100%',
               alignItems: 'center',
             }}>
-            <View>
+            <View style={{minWidth:'20%'}}>
               <Image
                 source={require('../../assets/images/icon.png')}
                 style={{width: 120, height: 120, padding: 20}}
                 resizeMode="contain"
               />
             </View>
-            <View>
+            <View style={{flex:1}} >
               <Text style={styles.modalText}>{user.owner}</Text>
               <Text style={styles.modalText}>{user.address}</Text>
               <Text style={styles.modalText}>{user.plate}</Text>

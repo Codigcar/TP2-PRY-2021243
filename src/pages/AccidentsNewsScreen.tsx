@@ -5,9 +5,7 @@ import {
   Text,
   View,
   TouchableOpacity,
-  FlatList,
   Platform,
-  Button,
   SafeAreaView,
 } from 'react-native';
 import {Avatar, Divider, SearchBar} from 'react-native-elements';
@@ -18,9 +16,9 @@ import {Styles} from '../assets/css/Styles';
 import Toast from 'react-native-toast-message';
 import {APP_API_SOCKET, POLICE_ID} from '@env';
 import ModalTakeAccident from './police/ModalTakeAccident';
-import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
 import {LoadingScreen} from './LoadingScreen';
 import CSearchBar from '../components/CSearchBar';
+import {ScrollView} from 'react-native-gesture-handler';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -34,8 +32,6 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
 
   const [search, setSearch] = useState<any>('');
   const [filteredDataSource, setFilteredDataSource] = useState<any>('');
-
-  const SafeSearchBar = SearchBar as unknown as React.FC<SearchBarBaseProps>;
 
   useEffect(() => {
     fetchListAccidents().then((resp: any) => {
@@ -82,20 +78,6 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
     setModalVisible(true);
   };
 
-  const searchFilterFunction = (text: string) => {
-    if (text) {
-      const newData = accidents.filter(function (item: any) {
-        const itemData = item.user.dni;
-        return itemData.indexOf(text) > -1;
-      });
-      setFilteredDataSource(newData);
-      setSearch(text);
-    } else {
-      setFilteredDataSource(accidents);
-      setSearch(text);
-    }
-  };
-
   const rendeItem = ({item}: any) => {
     return (
       <View>
@@ -118,10 +100,11 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
               <Text>R: {item.owner}</Text>
               <Text>Ubicación: {item.address}</Text>
               <Text>Placa: {item.plate}</Text>
-              <Text>DNI: {item.user.dni}</Text>
+              <Text>DNI: {item.user?.dni}</Text>
+              <Text>Telefono: {item.phone}</Text>
               {item.status == 0 && <Text>Fase: No atendido</Text>}
               {item.status == 1 && <Text>Fase: En proceso</Text>}
-              {item.status == 2 && <Text>Fase: Finzaldo</Text>}
+              {item.status == 2 && <Text>Fase: Finalizado</Text>}
             </View>
             <View style={styles.arrow}>
               <Icon
@@ -147,21 +130,20 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
       {loading ? (
         <LoadingScreen />
       ) : (
-        <View>
+        <ScrollView  >
           <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Recientes</Text>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
-
           <CSearchBar
-          accidents={accidents}
-          search={search}
-          setSearch={setSearch}
-          filteredDataSource={filteredDataSource}
-          setFilteredDataSource={setFilteredDataSource}
-          rendeItem={rendeItem}
+            accidents={accidents}
+            search={search}
+            setSearch={setSearch}
+            filteredDataSource={filteredDataSource}
+            setFilteredDataSource={setFilteredDataSource}
+            rendeItem={rendeItem}
           />
-        </View>
+        </ScrollView>
       )}
     </SafeAreaView>
   );

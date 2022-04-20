@@ -7,8 +7,6 @@ import {Styles} from '../assets/css/Styles';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from '../pages/LoadingScreen';
 import {Image, Text, View, Animated, StyleSheet, Modal} from 'react-native';
-import nfcManager from 'react-native-nfc-manager';
-import CModal from './CModal';
 import ModalConnectNFC from './ModalConnectNFC';
 
 interface Props {

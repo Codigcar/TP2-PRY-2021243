@@ -6,23 +6,55 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {Avatar} from 'react-native-elements';
-import {Button} from 'react-native-elements';
-import {io} from 'socket.io-client';
-import {APP_API, APP_API_SOCKET} from '@env';
 import {Styles} from '../../assets/css/Styles';
-import fetchWithToken from '../../utils/fetchCustom';
 import CModal from '../../components/CModal';
-import {IAccident} from '../../components/ModalConnectNFC';
+import fetchWithToken from '../../utils/fetchCustom';
+import { LoadingScreen } from '../LoadingScreen';
 
 const AccidentsDetailUserScreen = ({route: {params}}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [accidentDetail, setAccidentDetail] = useState<any>({});
+  // const [userObject, setUserObject] = useState<any>({});
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setAccidentDetail(params.user);
+    fetchInitData()
+      .then((resp: any) => {
+        console.log({resp});
+        // setAccidentDetail(params.user);
+        setAccidentDetail(resp);
+        // setDescription(resp.description);
+        // setConclusion(resp.conclusion);
+        // setUserObject(resp.user);
+      })
+      .catch(err => {
+        console.error({err});
+        Alert.alert('Error', 'Intentelo en unos minutos por favor');
+      });
   }, []);
+
+  const fetchInitData = async () => {
+    setLoading(true);
+    try {
+      const resp = await fetchWithToken(`api/accidents/${params.accidentId}`);
+      const data = await resp.json();
+      console.log({data});
+      setLoading(false);
+      return data;
+    } catch (error) {
+      console.error({error});
+      setLoading(false);
+    }
+  };
+
+  if(loading) {
+    return (
+      <LoadingScreen />
+    )
+  }
 
   return (
     <ScrollView>
@@ -38,12 +70,12 @@ const AccidentsDetailUserScreen = ({route: {params}}: any) => {
             />
           </View>
           <View style={styles.info}>
-            <Text>R: {accidentDetail.owner} </Text>
-            <Text>Ubicación: {accidentDetail.address}</Text>
-            <Text>Placa: {accidentDetail.plate}</Text>
+            <Text>R: {accidentDetail?.owner} </Text>
+            <Text>Ubicación: {accidentDetail?.address}</Text>
+            <Text>Placa: {accidentDetail?.plate}</Text>
             {accidentDetail.status == 0 && <Text>Fase: No atendido</Text>}
             {accidentDetail.status == 1 && <Text>Fase: En proceso</Text>}
-            {accidentDetail.status == 2 && <Text>Fase: Finzaldo</Text>}
+            {accidentDetail.status == 2 && <Text>Fase: Finalizado</Text>}
           </View>
         </View>
         <View style={styles.body}>

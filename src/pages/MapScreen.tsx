@@ -52,10 +52,6 @@ export const MapScreen = () => {
 
 const styleSheet = StyleSheet.create({
   icon: {
-    // backgroundColor:'red',
-    // position:'absolute',
     position: 'relative',
-    // left:10,
-    // top:10,
   },
 });

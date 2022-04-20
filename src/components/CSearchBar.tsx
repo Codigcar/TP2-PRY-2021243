@@ -3,6 +3,8 @@ import {View, Platform, FlatList, Text} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
 import {Styles} from '../assets/css/Styles';
+import { Dimensions } from 'react-native';
+
 const CSearchBar = ({
   accidents,
   search,
@@ -11,13 +13,12 @@ const CSearchBar = ({
   setFilteredDataSource,
   rendeItem,
 }: any) => {
-
   const SafeSearchBar = SearchBar as unknown as React.FC<SearchBarBaseProps>;
 
   const searchFilterFunction = (text: string) => {
     if (text) {
       const newData = accidents.filter(function (item: any) {
-        const itemData = item.user.dni;
+        const itemData = item.user?.dni;
         return itemData.indexOf(text) > -1;
       });
       setFilteredDataSource(newData);
@@ -29,13 +30,14 @@ const CSearchBar = ({
   };
 
   return (
-    <View>
+    <View style={{marginVertical: 5}}>
       <SafeSearchBar
         containerStyle={{
           backgroundColor: '#fff',
           borderTopColor: '#FFF',
           borderBottomColor: '#FFF',
           paddingHorizontal: 0,
+          marginRight: 20,
           ...Platform.select({
             ios: {
               paddingVertical: 0,
@@ -50,7 +52,7 @@ const CSearchBar = ({
         value={search}
         platform={'android'}
       />
-      <View>
+      <View  >
         {accidents.length > 0 ? (
           <View>
             {typeof filteredDataSource === 'string' ? (
@@ -83,9 +85,7 @@ const CSearchBar = ({
         ) : (
           <View
             style={{
-              height: '80%',
-              justifyContent: 'center',
-              alignItems: 'center',
+             
             }}>
             <Text>Aún no hay alertas nuevas</Text>
           </View>

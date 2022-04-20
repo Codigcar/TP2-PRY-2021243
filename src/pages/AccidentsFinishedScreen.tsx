@@ -16,7 +16,7 @@ import fetchWithToken from '../utils/fetchCustom';
 import {io} from 'socket.io-client';
 import {Styles} from '../assets/css/Styles';
 
-import {APP_API, APP_API_SOCKET} from '@env';
+import {APP_API_SOCKET} from '@env';
 import {LoadingScreen} from './LoadingScreen';
 import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
 import CSearchBar from '../components/CSearchBar';
@@ -65,22 +65,6 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
     }
   };
 
-  const searchFilterFunction = (text: string) => {
-    console.log({text});
-
-    if (text) {
-      const newData = accidents.filter(function (item: any) {
-        const itemData = item.user.dni;
-        return itemData.indexOf(text) > -1;
-      });
-      setFilteredDataSource(newData);
-      setSearch(text);
-    } else {
-      setFilteredDataSource(accidents);
-      setSearch(text);
-    }
-  };
-
   const rendeItem = ({item}: any) => {
     return (
       <>
@@ -104,13 +88,18 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
                 <Text>R: {item.owner}</Text>
                 <Text>Ubicación: {item.address}</Text>
                 <Text>Placa: {item.plate}</Text>
-                <Text>DNI: {item.user.dni}</Text>
+                <Text>DNI: {item.user?.dni}</Text>
+                <Text>Telefono: {item.phone}</Text>
                 {item.status == 0 && <Text>Fase: No atendido</Text>}
                 {item.status == 1 && <Text>Fase: En proceso</Text>}
                 {item.status == 2 && <Text>Fase: Finalizado</Text>}
               </View>
               <View style={styles.arrow}>
-                <Icon name="chevron-forward-outline" size={30} />
+                <Icon
+                  name="chevron-forward-outline"
+                  size={30}
+                  color={Styles.colors.primary}
+                />
               </View>
             </View>
           </TouchableOpacity>
@@ -138,6 +127,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
             setFilteredDataSource={setFilteredDataSource}
             rendeItem={rendeItem}
           />
+
         </View>
       )}
     </SafeAreaView>
@@ -148,6 +138,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     paddingVertical: 20,
+    borderBottomColor: '#e6e6e6',
+    borderBottomWidth: 1,
   },
   avatar: {
     justifyContent: 'center',

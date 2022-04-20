@@ -17,6 +17,9 @@ import {APP_API_SOCKET} from '@env';
 import {Styles} from '../../assets/css/Styles';
 import fetchWithToken from '../../utils/fetchCustom';
 import {USER_ID} from '@env';
+import CSearchBar from '../../components/CSearchBar';
+import {LoadingScreen} from '../LoadingScreen';
+import {ScrollView} from 'react-native-gesture-handler';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -24,15 +27,21 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
   const socketRef = useRef<any>();
   const [accidents, setListAccidents] = useState<any>([]);
   const isActive = useRef<any>(false);
+  const [loading, setloading] = useState<boolean>(false);
+
+  const [search, setSearch] = useState<any>('');
+  const [filteredDataSource, setFilteredDataSource] = useState<any>('');
 
   const fetchListAccidents = async () => {
+    setloading(true);
     try {
       const resp = await fetchWithToken(`api/accidents/user/${USER_ID}`);
       const data = await resp.json();
-      console.log({data});
+      setloading(false);
       return data;
     } catch (error) {
       console.error({error});
+      setloading(false);
     }
   };
 
@@ -40,8 +49,7 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
     fetchListAccidents().then((resp: any) => setListAccidents(resp));
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
-      console.log({data});
-      setListAccidents((oldArray: any) => [...oldArray, data]);
+      setListAccidents((oldArray: any) => [data, ...oldArray]);
     });
 
     socketRef.current.on('accidents-taken', (data: any) => {
@@ -52,11 +60,19 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
     isActive.current = true;
   }, []);
 
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   const rendeItem = ({item}: any) => {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate('AccidentDetailUserScreen', { user: item })}>
+        onPress={() =>
+          navigation.navigate('AccidentDetailUserScreen', {
+            accidentId: item.id,
+          })
+        }>
         <View style={styles.flexRow}>
           <View style={styles.avatar}>
             <Avatar
@@ -71,9 +87,10 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
             <Text>R: {item.owner}</Text>
             <Text>Ubicación: {item.address}</Text>
             <Text>Placa: {item.plate}</Text>
+            <Text>DNI: {item.user.dni}</Text>
             {item.status == 0 && <Text>Fase: No atendido</Text>}
             {item.status == 1 && <Text>Fase: En proceso</Text>}
-            {item.status == 2 && <Text>Fase: Finzaldo</Text>}
+            {item.status == 2 && <Text>Fase: Finalizado</Text>}
           </View>
           <View style={styles.arrow}>
             <Icon
@@ -88,17 +105,18 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
   };
 
   return (
-    <View>
+    <ScrollView>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Recientes</Text>
+        <Text style={styles.headerTitle}>Historial</Text>
       </View>
       <Divider style={styles.dividerTitleLineRed} />
+     
       <FlatList
         data={accidents}
-        renderItem={rendeItem}
         keyExtractor={(item, index) => index.toString()}
+        renderItem={rendeItem}
       />
-    </View>
+    </ScrollView>
   );
 };
 

@@ -7,7 +7,6 @@ import {PermissionsContext} from '../context/PermissionsContext';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {AccidentsNewsScreen} from '../pages/AccidentsNewsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Text, Button} from 'react-native';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import AccidentsDetailScreen from '../pages/AccidentsDetailScreen';
 import {AccidentsFinishedScreen} from '../pages/AccidentsFinishedScreen';
@@ -15,12 +14,17 @@ import {Styles} from '../assets/css/Styles';
 import MapUserScreen from '../pages/user/MapUserScreen';
 import {AccidentsNewsUserScreen} from '../pages/user/AccidentsNewsUserScreen';
 import AccidentsDetailUserScreen from '../pages/user/AccidentsDetailUserScreen';
-import ModalTakeAccident from '../pages/police/ModalTakeAccident';
-import { Avatar } from 'react-native-elements';
+import {Avatar} from 'react-native-elements';
+import {StartScreen} from '../pages/auth/StartScreen';
+import {RegisterGeneralScreen} from '../pages/auth/RegisterGeneralScreen';
+import {RegisterPoliceScreen} from '../pages/auth/RegisterPoliceScreen';
+import {LoginScreen} from '../pages/auth/LoginScreen';
+import {MainGeneralScreen} from '../pages/auth/MainGeneralScreen';
+import {MainPoliceScreen} from '../pages/auth/MainPoliceScreen';
 
+const StackAuth = createStackNavigator();
 const Stack = createStackNavigator();
 const StackV2 = createStackNavigator();
-// const Tab = createBottomTabNavigator();
 const Tab = createMaterialBottomTabNavigator();
 const UserTab = createMaterialBottomTabNavigator();
 
@@ -33,7 +37,7 @@ export const Navigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="PermissionScreen"
+      initialRouteName="AuthNavigator"
       screenOptions={{
         headerShown: false,
         cardStyle: {
@@ -41,18 +45,46 @@ export const Navigator = () => {
         },
       }}>
       {permissions.locationStatus === 'granted' ? (
-        <Stack.Screen
-          name="PoliceBottomNavigator"
-          component={PoliceBottomNavigator}></Stack.Screen>
+        // <Stack.Screen
+        //   name="PoliceBottomNavigator"
+        //   component={PoliceBottomNavigator} />
+        <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
       ) : (
         // ? <Stack.Screen name="UserBottomNavigator" component={UserBottomNavigator} ></Stack.Screen>
-        <Stack.Screen
-          name="PermissionScreen"
-          component={PermissionsScreen}></Stack.Screen>
+        <Stack.Screen name="PermissionScreen" component={PermissionsScreen} />
       )}
     </Stack.Navigator>
   );
 };
+
+export const AuthNavigator = () => {
+  return (
+    <StackAuth.Navigator
+      initialRouteName="Start"
+      screenOptions={{
+        headerShown: false,
+        cardStyle: {
+          backgroundColor: 'white',
+        },
+      }}>
+      <StackAuth.Screen name="Start" component={StartScreen} />
+      <Stack.Screen
+        name="Register"
+        component={RegisterGeneralScreen}></Stack.Screen>
+      <Stack.Screen
+        name="Registrar Policía"
+        component={RegisterPoliceScreen}></Stack.Screen>
+      <Stack.Screen name="Login" component={LoginScreen}></Stack.Screen>
+      <Stack.Screen
+        name="Inicio General"
+        component={UserBottomNavigator}></Stack.Screen>
+      <Stack.Screen
+        name="Inicio Policía"
+        component={PoliceBottomNavigator}></Stack.Screen>
+    </StackAuth.Navigator>
+  );
+};
+
 export const PoliceBottomNavigator = () => {
   return (
     <Tab.Navigator
@@ -64,7 +96,6 @@ export const PoliceBottomNavigator = () => {
       screenOptions={({route}: any) => ({
         // tabBarActiveTintColor: 'white',
         tabBarStyle: {
-          // borderTopColor: 'white',
           borderTopWidth: 0,
           elevation: 0,
         },
@@ -73,7 +104,6 @@ export const PoliceBottomNavigator = () => {
           fontSize: 12,
         },
         tabBarIcon: () => {
-          //icons
           let iconName: string = '';
           switch (route.name) {
             case 'Home':
@@ -132,7 +162,12 @@ export const PoliceStackNavigatorAccNews = () => {
       <StackV2.Screen
         options={{
           headerRight: () => (
-            <Avatar rounded title="MD" overlayContainerStyle={{backgroundColor: Styles.colors.primary }} containerStyle={{marginRight:10}} />
+            <Avatar
+              rounded
+              title="MD"
+              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+              containerStyle={{marginRight: 10}}
+            />
           ),
         }}
         name="AccidentsScreen"
@@ -144,7 +179,7 @@ export const PoliceStackNavigatorAccNews = () => {
           headerShown: true,
           title: 'Detalle del Accidente',
           headerTitleAlign: 'center',
-          headerTintColor:'white',
+          headerTintColor: 'white',
           headerStyle: {
             elevation: 0,
             borderBottomWidth: 3,
@@ -184,7 +219,12 @@ export const PoliceStackNavigatorAccFinished = () => {
         component={AccidentsFinishedScreen}
         options={{
           headerRight: () => (
-            <Avatar rounded title="MD" overlayContainerStyle={{backgroundColor: Styles.colors.primary }} containerStyle={{marginRight:10}} />
+            <Avatar
+              rounded
+              title="MD"
+              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+              containerStyle={{marginRight: 10}}
+            />
           ),
         }}
       />
@@ -211,6 +251,9 @@ export const PoliceStackNavigatorAccFinished = () => {
 export const UserBottomNavigator = () => {
   return (
     <UserTab.Navigator
+      barStyle={{
+        backgroundColor: Styles.colors.secondary,
+      }}
       screenOptions={({route}: any) => ({
         tabBarActiveTintColor: 'white',
         tabBarStyle: {
@@ -241,18 +284,15 @@ export const UserBottomNavigator = () => {
           );
         },
       })}
-      barStyle={{
-        backgroundColor: 'white',
-      }}
       sceneAnimationEnabled={true}>
       <UserTab.Screen
         name="Home"
-        options={{title: 'MapaUser'}}
+        options={{title: 'Mapa'}}
         component={MapUserScreen}
       />
       <UserTab.Screen
         name="Accidents"
-        options={{title: 'Recientes'}}
+        options={{title: 'Accidentes'}}
         component={UserStackNavigatorAccNews}
       />
     </UserTab.Navigator>
@@ -274,16 +314,40 @@ export const UserStackNavigatorAccNews = () => {
           elevation: 0,
           borderBottomWidth: 3,
           borderBottomColor: '#e6e6e6',
+          backgroundColor: Styles.colors.secondary,
+        },
+        headerTitleStyle: {
+          color: 'white',
         },
       }}>
       <StackV2.Screen
         name="AccidentsUserScreen"
+        options={{
+          headerLeft: () => null,
+          headerRight: () => (
+            <Avatar
+              rounded
+              title="MD"
+              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+              containerStyle={{marginRight: 10}}
+            />
+          ),
+        }}
         component={AccidentsNewsUserScreen}
       />
       <StackV2.Screen
         name="AccidentDetailUserScreen"
         options={{
           title: 'Detalle del Accidente',
+          headerTintColor: 'white',
+          headerRight: () => (
+            <Avatar
+              rounded
+              title="MD"
+              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+              containerStyle={{marginRight: 10}}
+            />
+          ),
         }}
         component={AccidentsDetailUserScreen}
       />

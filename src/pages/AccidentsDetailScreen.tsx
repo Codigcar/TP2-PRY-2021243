@@ -18,30 +18,27 @@ import {APP_API, APP_API_SOCKET} from '@env';
 import {validateAll} from 'indicative/validator';
 import {LoadingScreen} from './LoadingScreen';
 import {Alert} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 interface Props extends StackScreenProps<any, any> {
-  route:any
+  route: any;
 }
 
 const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [accidentDetail, setAccidentDetail] = useState<any>([]);
+  const [accidentDetail, setAccidentDetail] = useState<any>({});
 
   const [description, setDescription] = useState('');
   const [conclusion, setConclusion] = useState('');
   const [SignUpErrors, setSignUpErrors] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [userObject, setUserObject] = useState<any>({});
 
   useEffect(() => {
     fetchInitData()
       .then((resp: any) => {
-        console.log({resp});
         setAccidentDetail(resp);
         setDescription(resp.description);
         setConclusion(resp.conclusion);
-        setUserObject(resp.user);
       })
       .catch(err => {
         console.error({err});
@@ -65,8 +62,8 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
 
   const updatedAccident = async (accident: any) => {
     const rules = {
-      description: 'required|string',
-      conclusion: 'required|string',
+      // description: 'string',
+      // conclusion: 'string',
     };
 
     const data = {
@@ -83,12 +80,23 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
     validateAll(data, rules, messages)
       .then(async () => {
         setLoading(true);
-        const body: any = {
-          status: 2,
-          description,
-          conclusion,
-          userPolice: accident.userPolice,
-        };
+        let body: any = {};
+        if (conclusion.trim().length > 0) {
+          body = {
+            status: 2,
+            description,
+            conclusion,
+            userPolice: accident.userPolice,
+          };
+        } else {
+          body = {
+            status: 1,
+            description,
+            conclusion,
+            userPolice: accident.userPolice,
+          };
+        }
+
         try {
           console.log({body});
           const data = await fetchWithToken(
@@ -117,10 +125,8 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
       });
   };
 
-
-
   return (
-    <SafeAreaView style={{flex:1, backgroundColor:'white'}} >
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       {loading ? (
         <LoadingScreen />
       ) : (
@@ -137,11 +143,11 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
                 />
               </View>
               <View style={styles.info}>
-                <Text>R: {accidentDetail.owner} </Text>
-                <Text>Ubicación: {accidentDetail.address}</Text>
-                <Text>Placa: {accidentDetail.plate}</Text>
-                <Text>DNI: {userObject.dni}</Text>
-                {/* <Text>{JSON.stringify(accidentDetail.user.dni)}</Text> */}
+                <Text>R: {accidentDetail.user?.name} </Text>
+                <Text>Ubicación: {accidentDetail?.address}</Text>
+                <Text>Placa: {accidentDetail?.plate}</Text>
+                <Text>Dueño: {accidentDetail?.owner} </Text>
+                <Text>Telefono: {accidentDetail?.phone}</Text>
                 {accidentDetail.status == 0 && <Text>Fase: No atendido</Text>}
                 {accidentDetail.status == 1 && <Text>Fase: En proceso</Text>}
                 {accidentDetail.status == 2 && <Text>Fase: Finalizado</Text>}
@@ -156,7 +162,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
                   borderWidth: 1,
                   borderColor: Styles.colors.primary,
                   borderRadius: 20,
-                  paddingHorizontal:10
+                  paddingHorizontal: 10,
                 }}
                 placeholder="Escriba una descripción"
                 value={description}
@@ -175,7 +181,7 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
                   borderWidth: 1,
                   borderColor: Styles.colors.primary,
                   borderRadius: 20,
-                  paddingHorizontal:10
+                  paddingHorizontal: 10,
                 }}
                 placeholder="Escriba una conclusión"
                 value={conclusion}
