@@ -7,7 +7,7 @@ import {PermissionsProvider} from './src/context/PermissionsContext';
 import {LogBox} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {toastConfig} from './src/utils/toastConfig';
-import NFCScreen from './src/pages/NFCScreen';
+import NFCScreen from './src/pages/police/NFCScreen';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 LogBox.ignoreAllLogs();

@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
-import {Map} from '../components/Map';
+import {Map} from '../../components/Map';
 
 import {io} from 'socket.io-client';
-import fetchWithToken from '../utils/fetchCustom';
-import {PermissionsContext} from '../context/PermissionsContext';
+import fetchWithToken from '../../utils/fetchCustom';
+import {PermissionsContext} from '../../context/PermissionsContext';
 import {APP_API, APP_API_SOCKET} from '@env';
 
 export const MapScreen = () => {

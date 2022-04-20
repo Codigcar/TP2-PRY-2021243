@@ -9,14 +9,14 @@ import {
   ScrollView,
 } from 'react-native';
 import {Avatar, Input} from 'react-native-elements';
-import {Styles} from '../assets/css/Styles';
+import {Styles} from '../../assets/css/Styles';
 import {Button} from 'react-native-elements';
-import CModal from '../components/CModal';
-import fetchWithToken from '../utils/fetchCustom';
+import CModal from '../../components/CModal';
+import fetchWithToken from '../../utils/fetchCustom';
 import {io} from 'socket.io-client';
 import {APP_API, APP_API_SOCKET} from '@env';
 import {validateAll} from 'indicative/validator';
-import {LoadingScreen} from './LoadingScreen';
+import {LoadingScreen} from '../LoadingScreen';
 import {Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
@@ -107,9 +107,9 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
           const resp = await data.json();
           console.log({resp});
           setLoading(false);
-          // navigation.goBack();
-          // navigation.navigate('AccidentsFinishedScreen')
-          navigation.popToTop();
+          navigation.goBack();
+          // navigation.navigate('AccidentsFinishedScreen');
+          // navigation.popToTop();
         } catch (error) {
           console.error({error});
           setLoading(false);

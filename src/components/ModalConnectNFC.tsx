@@ -141,7 +141,7 @@ const ModalConnectNFC = ({
             style={{width: 120, height: 120, padding: 20}}
             resizeMode="contain"
           />
-          <Text style={styles.modalText}>Acerca tu dispositivo al NFC</Text>
+          <Text style={styles.modalText}>Acerca tu teléfono al tag circular en la esquina inferior derecha del parabrisas</Text>
           <Button
             title="Cancelar"
             onPress={() => cancelNfcScan()}

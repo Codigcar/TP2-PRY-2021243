@@ -3,7 +3,7 @@ import {View, Platform, FlatList, Text} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar';
 import {Styles} from '../assets/css/Styles';
-import { Dimensions } from 'react-native';
+import {Dimensions} from 'react-native';
 
 const CSearchBar = ({
   accidents,
@@ -30,7 +30,7 @@ const CSearchBar = ({
   };
 
   return (
-    <View style={{marginVertical: 5}}>
+    <View style={{marginVertical: 5, flex: 1}}>
       <SafeSearchBar
         containerStyle={{
           backgroundColor: '#fff',
@@ -52,9 +52,9 @@ const CSearchBar = ({
         value={search}
         platform={'android'}
       />
-      <View  >
+      <View style={{flex: 1}}>
         {accidents.length > 0 ? (
-          <View>
+          <View style={{flex: 1}}>
             {typeof filteredDataSource === 'string' ? (
               <FlatList
                 data={accidents}
@@ -62,15 +62,17 @@ const CSearchBar = ({
                 renderItem={rendeItem}
               />
             ) : (
-              <>
+              <View style={{flex: 1}}>
                 {filteredDataSource.length === 0 ? (
                   <View
                     style={{
-                      height: '80%',
                       justifyContent: 'center',
                       alignItems: 'center',
+                      flex: 1,
                     }}>
-                    <Text>No se encontraron alertas con este DNI</Text>
+                    <View>
+                      <Text>No se encontraron alertas con este DNI</Text>
+                    </View>
                   </View>
                 ) : (
                   <FlatList
@@ -79,15 +81,13 @@ const CSearchBar = ({
                     renderItem={rendeItem}
                   />
                 )}
-              </>
+              </View>
             )}
           </View>
         ) : (
           <View
-            style={{
-             
-            }}>
-            <Text>Aún no hay alertas nuevas</Text>
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text>Alertas no encontradas</Text>
           </View>
         )}
       </View>

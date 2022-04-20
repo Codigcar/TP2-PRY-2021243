@@ -1,91 +1,100 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
+  FlatList,
   Platform,
+  Alert,
   SafeAreaView,
 } from 'react-native';
 import {Avatar, Divider, SearchBar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
-import fetchWithToken from '../utils/fetchCustom';
+import fetchWithToken from '../../utils/fetchCustom';
 import {io} from 'socket.io-client';
-import {Styles} from '../assets/css/Styles';
-import Toast from 'react-native-toast-message';
-import {APP_API_SOCKET, POLICE_ID} from '@env';
-import ModalTakeAccident from './police/ModalTakeAccident';
-import {LoadingScreen} from './LoadingScreen';
-import CSearchBar from '../components/CSearchBar';
-import {ScrollView} from 'react-native-gesture-handler';
+import {Styles} from '../../assets/css/Styles';
+
+import {APP_API_SOCKET} from '@env';
+import {LoadingScreen} from '../LoadingScreen';
+import CSearchBar from '../../components/CSearchBar';
+import {useFocusEffect} from '@react-navigation/native';
 
 interface Props extends StackScreenProps<any, any> {}
 
-export const AccidentsNewsScreen = ({navigation}: Props) => {
+export const AccidentsFinishedScreen = ({navigation}: Props) => {
   const socketRef = useRef<any>();
   const [accidents, setListAccidents] = useState<any>([]);
   const isActive = useRef<any>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [userSelected, setUserSelected] = useState<any>({});
   const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState<any>('');
   const [filteredDataSource, setFilteredDataSource] = useState<any>('');
+  const isMounted = useRef(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      isMounted.current = true;
+      fetchListAccidents()
+        .then((resp: any) => {
+          if (isMounted.current) {
+            setListAccidents(resp.filter((item: any) => item.status !== 0));
+          }
+        })
+        .catch(err => {
+          console.error({err});
+          Alert.alert('Error', 'Intentelo en unos minutos por favor');
+        });
+      socketRef.current = io(`${APP_API_SOCKET}`);
+      socketRef.current.on('accidents', (data: any) => {
+        console.error('accidents: ', data);
+        setListAccidents((oldArray: any) => [
+          data?.filter((item: any) => item.status !== 0),
+          ...oldArray
+        ]);
+      });
+
+      socketRef.current.on('accidents-taken', (data: any) => {
+        data.item !== 0 && setListAccidents((array: any) => [data,...array ]);
+      });
+      isActive.current = true;
+      return () => {
+        console.log('Des-montado');
+        isMounted.current = false;
+      };
+    }, []),
+  );
 
   useEffect(() => {
-    fetchListAccidents().then((resp: any) => {
-      setListAccidents(resp);
-    });
-    socketRef.current = io(`${APP_API_SOCKET}`);
-    socketRef.current.on('accidents', (data: any) => {
-      console.log({data});
-      showToast();
-      setListAccidents((oldArray: any) => [data, ...oldArray]);
-    });
-
-    socketRef.current.on('accidents-taken', (data: any) => {
-      setListAccidents((array: any) =>
-        array.filter((item: any) => item.id !== data.id),
-      );
-    });
-    isActive.current = true;
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   const fetchListAccidents = async () => {
     setLoading(true);
     try {
-      const resp = await fetchWithToken(`api/accidents/no-active`);
+      const resp = await fetchWithToken(`api/accidents`);
       const data = await resp.json();
+      console.log({data});
       setLoading(false);
       return data;
     } catch (error) {
-      setLoading(false);
       console.error({error});
+      setLoading(false);
     }
-  };
-
-  const showToast = () => {
-    Toast.show({
-      type: 'success',
-      text1: '¡Nuevo Accidente!',
-      text2: 'En Av. Las Palmeras 321 👋',
-    });
-  };
-
-  const openModal = (item: any) => {
-    setUserSelected(item);
-    setModalVisible(true);
   };
 
   const rendeItem = ({item}: any) => {
     return (
       <View>
+        {/* {(item.status == 1 || item.status == 2) && ( */}
         <TouchableOpacity
           style={styles.card}
-          onPress={() => {
-            openModal(item);
-          }}>
+          onPress={() =>
+            navigation.navigate('AccidentDetailScreen', {accidentId: item.id})
+          }>
           <View style={styles.flexRow}>
             <View style={styles.avatar}>
               <Avatar
@@ -115,12 +124,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
             </View>
           </View>
         </TouchableOpacity>
-        <ModalTakeAccident
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          user={userSelected}
-          navigation={navigation}
-        />
+        {/* )} */}
       </View>
     );
   };
@@ -130,11 +134,12 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
       {loading ? (
         <LoadingScreen />
       ) : (
-        <ScrollView  >
+        <View style={{flex: 1}}>
           <View style={styles.headerContainer}>
-            <Text style={styles.headerTitle}>Recientes</Text>
+            <Text style={styles.headerTitle}>Atendidos</Text>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
+
           <CSearchBar
             accidents={accidents}
             search={search}
@@ -143,7 +148,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
             setFilteredDataSource={setFilteredDataSource}
             rendeItem={rendeItem}
           />
-        </ScrollView>
+        </View>
       )}
     </SafeAreaView>
   );
