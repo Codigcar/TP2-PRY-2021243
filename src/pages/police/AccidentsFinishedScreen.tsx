@@ -50,13 +50,13 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
       socketRef.current.on('accidents', (data: any) => {
         console.error('accidents: ', data);
         setListAccidents((oldArray: any) => [
-          data?.filter((item: any) => item.status !== 0),
+          data.status !== 0 && data,
           ...oldArray
         ]);
       });
 
       socketRef.current.on('accidents-taken', (data: any) => {
-        data.item !== 0 && setListAccidents((array: any) => [data,...array ]);
+        data.item !== 0 && setListAccidents((oldArray: any) => [data,...oldArray ]);
       });
       isActive.current = true;
       return () => {

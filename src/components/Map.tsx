@@ -6,7 +6,7 @@ import {LoadingScreen} from '../pages/LoadingScreen';
 import {Fab} from './Fab';
 import {View, Image} from 'react-native';
 import {Button} from 'react-native-elements';
-import ModalConnectNFC from './ModalConnectNFC';
+import ModalConnectNFC from '../pages/user/ModalConnectNFC';
 import { Styles } from '../assets/css/Styles';
 
 interface Props {

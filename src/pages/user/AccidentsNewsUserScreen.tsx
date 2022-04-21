@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,19 +7,17 @@ import {
   TouchableOpacity,
   FlatList,
   Platform,
-  Button,
 } from 'react-native';
 import {Avatar, Divider} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {io} from 'socket.io-client';
-import Toast from 'react-native-toast-message';
 import {APP_API_SOCKET} from '@env';
 import {Styles} from '../../assets/css/Styles';
 import fetchWithToken from '../../utils/fetchCustom';
-import {USER_ID} from '@env';
-import CSearchBar from '../../components/CSearchBar';
 import {LoadingScreen} from '../LoadingScreen';
 import {ScrollView} from 'react-native-gesture-handler';
+import {AuthContext} from '../../context/AuthContext';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -28,14 +26,14 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
   const [accidents, setListAccidents] = useState<any>([]);
   const isActive = useRef<any>(false);
   const [loading, setloading] = useState<boolean>(false);
-
-  const [search, setSearch] = useState<any>('');
-  const [filteredDataSource, setFilteredDataSource] = useState<any>('');
+  const {authState} = useContext(AuthContext);
 
   const fetchListAccidents = async () => {
     setloading(true);
     try {
-      const resp = await fetchWithToken(`api/accidents/user/${USER_ID}`);
+      const resp = await fetchWithToken(
+        `api/accidents/user/${authState.userId}`,
+      );
       const data = await resp.json();
       setloading(false);
       return data;
@@ -105,18 +103,30 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Historial</Text>
-      </View>
-      <Divider style={styles.dividerTitleLineRed} />
-     
-      <FlatList
-        data={accidents}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={rendeItem}
-      />
-    </ScrollView>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <View style={{flex: 1}}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Historial</Text>
+          </View>
+          <Divider style={styles.dividerTitleLineRed} />
+          {accidents.length > 0 ? (
+            <FlatList
+              data={accidents}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={rendeItem}
+            />
+          ) : (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text>Alertas no encontradas</Text>
+            </View>
+          )}
+        </View>
+      )}
+    </SafeAreaView>
   );
 };
 

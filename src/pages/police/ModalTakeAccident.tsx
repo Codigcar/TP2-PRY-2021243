@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import {
   Alert,
   Modal,
@@ -10,7 +10,8 @@ import {
 import {Button} from 'react-native-elements';
 import {io} from 'socket.io-client';
 import {Styles} from '../../assets/css/Styles';
-import {APP_API_SOCKET, POLICE_ID} from '@env';
+import {APP_API_SOCKET} from '@env';
+import { AuthContext } from '../../context/AuthContext';
 
 export interface IAccident {
   longitude: string;
@@ -23,13 +24,14 @@ export interface IAccident {
   address: string;
 }
 
-const ModalTakeAccident = ({modalVisible, setModalVisible, user, navigation}: any) => {
+const ModalTakeAccident = ({modalVisible, setModalVisible, accident, navigation}: any) => {
   const socketRef = useRef<any>();
+  const { authState } = useContext(AuthContext);
   socketRef.current = io(`${APP_API_SOCKET}`);
 
   const acceptedAccident = (id: string) => {
-    socketRef.current.emit('accidents-taken', {id: id, userPolice: POLICE_ID});
-    navigation.navigate('AccidentDetailScreen', {accidentId: id});
+    socketRef.current.emit('accidents-taken', {id: accident.id, userPolice: authState.userId});
+    navigation.navigate('AccidentDetailScreen', {accidentId: accident.id});
     setModalVisible(false);
   };
 
@@ -67,14 +69,14 @@ const ModalTakeAccident = ({modalVisible, setModalVisible, user, navigation}: an
               />
             </View>
             <View style={{flex:1}} >
-              <Text style={styles.modalText}>{user.owner}</Text>
-              <Text style={styles.modalText}>{user.address}</Text>
-              <Text style={styles.modalText}>{user.plate}</Text>
+              <Text style={styles.modalText}>{accident.owner}</Text>
+              <Text style={styles.modalText}>{accident.address}</Text>
+              <Text style={styles.modalText}>{accident.plate}</Text>
             </View>
           </View>
           <Button
             title="Aceptar"
-            onPress={() => acceptedAccident(user.id)}
+            onPress={() => acceptedAccident(accident.id)}
             containerStyle={{
               borderRadius: 10,
               width: '100%',

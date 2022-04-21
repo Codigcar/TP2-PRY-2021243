@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 import {toastConfig} from './src/utils/toastConfig';
 import NFCScreen from './src/pages/police/NFCScreen';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {AuthProvider} from './src/context/AuthContext';
 
 LogBox.ignoreAllLogs();
 LogBox.ignoreLogs([
@@ -18,16 +19,20 @@ LogBox.ignoreLogs([
 ]);
 
 const AppState = ({children}: any) => {
-  return <PermissionsProvider>{children}</PermissionsProvider>;
+  return (
+    <PermissionsProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </PermissionsProvider>
+  );
 };
 
 const App = () => {
   return (
     <NavigationContainer>
-        <AppState>
-          <Navigator />
-        </AppState>
-        <Toast config={toastConfig} />
+      <AppState>
+        <Navigator />
+      </AppState>
+      <Toast config={toastConfig} />
     </NavigationContainer>
   );
 };

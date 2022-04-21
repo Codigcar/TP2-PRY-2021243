@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {
   StyleSheet,
@@ -8,39 +8,47 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import {Avatar, Input} from 'react-native-elements';
+import {Avatar} from 'react-native-elements';
 import {Styles} from '../../assets/css/Styles';
 import {Button} from 'react-native-elements';
 import CModal from '../../components/CModal';
 import fetchWithToken from '../../utils/fetchCustom';
-import {io} from 'socket.io-client';
-import {APP_API, APP_API_SOCKET} from '@env';
 import {validateAll} from 'indicative/validator';
 import {LoadingScreen} from '../LoadingScreen';
 import {Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useForm, useController} from 'react-hook-form';
+import {AuthContext} from '../../context/AuthContext';
 
 interface Props extends StackScreenProps<any, any> {
   route: any;
 }
 
 const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
-  const [modalVisible, setModalVisible] = useState(false);
   const [accidentDetail, setAccidentDetail] = useState<any>({});
-
-  const [description, setDescription] = useState('');
-  const [conclusion, setConclusion] = useState('');
-  const [SignUpErrors, setSignUpErrors] = useState<any>({});
+  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingInitData, setLoadingInitData] = useState<boolean>(false);
+  const {authState} = useContext(AuthContext);
+  const {
+    setValue,
+    handleSubmit,
+    control,
+    reset,
+    formState: {errors},
+  } = useForm();
 
   useEffect(() => {
+    setLoadingInitData(true);
     fetchInitData()
       .then((resp: any) => {
         setAccidentDetail(resp);
-        setDescription(resp.description);
-        setConclusion(resp.conclusion);
+        setValue('description', resp.description);
+        setValue('conclusion', resp.conclusion);
+        setLoadingInitData(false);
       })
       .catch(err => {
+        setLoadingInitData(false);
         console.error({err});
         Alert.alert('Error', 'Intentelo en unos minutos por favor');
       });
@@ -60,70 +68,74 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
     }
   };
 
-  const updatedAccident = async (accident: any) => {
-    const rules = {
-      // description: 'string',
-      // conclusion: 'string',
-    };
-
-    const data = {
-      description: description,
-      conclusion: conclusion,
-    };
-
-    const messages = {
-      required: 'Campo requerido',
-    };
-
-    console.log({accident});
-
-    validateAll(data, rules, messages)
-      .then(async () => {
-        setLoading(true);
-        let body: any = {};
-        if (conclusion.trim().length > 0) {
-          body = {
-            status: 2,
-            description,
-            conclusion,
-            userPolice: accident.userPolice,
-          };
-        } else {
-          body = {
-            status: 1,
-            description,
-            conclusion,
-            userPolice: accident.userPolice,
-          };
-        }
-
-        try {
-          console.log({body});
-          const data = await fetchWithToken(
-            `api/accidents/${accident.id}`,
-            body,
-            'PUT',
-          );
-          const resp = await data.json();
-          console.log({resp});
-          setLoading(false);
-          navigation.goBack();
-          // navigation.navigate('AccidentsFinishedScreen');
-          // navigation.popToTop();
-        } catch (error) {
-          console.error({error});
-          setLoading(false);
-        }
-      })
-      .catch(err => {
-        let formatError: any = {};
-        console.log('ERROR: ' + JSON.stringify(err));
-        err.forEach((err: any) => {
-          formatError[err.field] = err.message;
-        });
-        setSignUpErrors(formatError);
-      });
+  const CInput = ({name, control}: any) => {
+    const {field} = useController({
+      control,
+      defaultValue: '',
+      name,
+    });
+    return (
+      <TextInput
+        multiline={true}
+        numberOfLines={7}
+        style={{
+          borderWidth: 1,
+          borderColor: Styles.colors.primary,
+          borderRadius: 20,
+          paddingHorizontal: 10,
+        }}
+        placeholder="Escriba una descripción"
+        value={field.value}
+        onChangeText={field.onChange}
+      />
+    );
   };
+
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    console.log('[onSubmit]: ', data);
+    
+    let body: any = {};
+    if (data.conclusion || data.conclusion?.trim().length > 0 ) {
+      body = {
+        status: 2,
+        description: data.description,
+        conclusion: data.conclusion,
+        userPolice: authState.userId,
+      };
+    } else {
+      body = {
+        status: 1,
+        description: data.description,
+        conclusion: data.conclusion,
+        userPolice: authState.userId,
+      };
+    }
+
+    try {
+      const datares = await fetchWithToken(
+        `api/accidents/${accidentDetail.id}`,
+        body,
+        'PUT',
+      );
+      const resp = await datares.json();
+      setValue('description', "");
+      setValue('conclusion', "");
+      // reset();
+      console.log({resp});
+      setLoading(false);
+      // navigation.goBack();
+      // navigation.navigate('AccidentsFinishedScreen');
+      navigation.popToTop();
+    } catch (error) {
+      console.error({error});
+      setLoading(false);
+    }
+  };
+
+  if(loadingInitData){
+    <LoadingScreen />
+  }
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -155,44 +167,20 @@ const AccidentsDetailScreen = ({route: {params}, navigation}: Props) => {
             </View>
             <View style={styles.body}>
               <Text style={styles.titleInput}>Descripción</Text>
-              <TextInput
-                multiline={true}
-                numberOfLines={7}
-                style={{
-                  borderWidth: 1,
-                  borderColor: Styles.colors.primary,
-                  borderRadius: 20,
-                  paddingHorizontal: 10,
-                }}
-                placeholder="Escriba una descripción"
-                value={description}
-                onChangeText={setDescription}
-              />
-              {SignUpErrors && (
+              <CInput name="description" control={control} />
+              {/* {SignUpErrors && (
                 <Text style={styles.errorStyle}>
                   {SignUpErrors.description}
                 </Text>
-              )}
+              )} */}
               <Text style={styles.titleInput}>Conclusión</Text>
-              <TextInput
-                multiline={true}
-                numberOfLines={7}
-                style={{
-                  borderWidth: 1,
-                  borderColor: Styles.colors.primary,
-                  borderRadius: 20,
-                  paddingHorizontal: 10,
-                }}
-                placeholder="Escriba una conclusión"
-                value={conclusion}
-                onChangeText={setConclusion}
-              />
-              {SignUpErrors && (
+              <CInput name="conclusion" control={control} />
+              {/*  {SignUpErrors && (
                 <Text style={styles.errorStyle}>{SignUpErrors.conclusion}</Text>
-              )}
+              )} */}
               <Button
                 title="Guardar registro"
-                onPress={() => updatedAccident(accidentDetail)}
+                onPress={handleSubmit(onSubmit)}
                 containerStyle={{
                   borderRadius: 10,
                   width: '100%',

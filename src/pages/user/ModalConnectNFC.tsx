@@ -1,27 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Modal,
   StyleSheet,
   Text,
-  Pressable,
   View,
   Image,
 } from 'react-native';
 import {Button} from 'react-native-elements';
-import {Styles} from '../assets/css/Styles';
+import {Styles} from '../../assets/css/Styles';
 import NfcManager, {
   Ndef,
-  NfcError,
-  NfcEvents,
   NfcTech,
 } from 'react-native-nfc-manager';
 import Toast from 'react-native-toast-message';
-import fetchWithToken from '../utils/fetchCustom';
 import Geocoder from 'react-native-geocoder';
 import {APP_API_SOCKET} from '@env';
 import {io} from 'socket.io-client';
-import { USER_ID } from '@env' 
+import { AuthContext } from '../../context/AuthContext';
 
 
 export interface IAccident {
@@ -43,6 +39,7 @@ const ModalConnectNFC = ({
   longitude,
 }: any) => {
   const socketRef = useRef<any>();
+  const { authState } = useContext(AuthContext);
 
   useEffect(() => {
     if (modalVisible) {
@@ -69,10 +66,6 @@ const ModalConnectNFC = ({
       let distric = '';
       let address = '';
 
-      console.log({Nombre});
-      console.log({Placa});
-      console.log({Celular});
-
       if (tag) {
         cancelNfcScan();
         showToast();
@@ -97,7 +90,7 @@ const ModalConnectNFC = ({
           plate: Placa,
           owner: Nombre,
           phone: Celular,
-          user: `${USER_ID}`,
+          user: authState.userId,
           address: distric + ', ' + address,
         };
 
@@ -137,11 +130,11 @@ const ModalConnectNFC = ({
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Image
-            source={require('../assets/images/nfc-512.png')}
+            source={require('../../assets/images/parabrisas.png')}
             style={{width: 120, height: 120, padding: 20}}
             resizeMode="contain"
           />
-          <Text style={styles.modalText}>Acerca tu teléfono al tag circular en la esquina inferior derecha del parabrisas</Text>
+          <Text style={styles.modalText}>Acerca tu teléfono al tag circular en la esquina inferior izquierda del parabrisas</Text>
           <Button
             title="Cancelar"
             onPress={() => cancelNfcScan()}

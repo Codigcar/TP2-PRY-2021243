@@ -7,7 +7,7 @@ import {Styles} from '../assets/css/Styles';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from '../pages/LoadingScreen';
 import {Image, Text, View, Animated, StyleSheet, Modal} from 'react-native';
-import ModalConnectNFC from './ModalConnectNFC';
+import ModalConnectNFC from '../pages/user/ModalConnectNFC';
 
 interface Props {
   markers?: Marker[];

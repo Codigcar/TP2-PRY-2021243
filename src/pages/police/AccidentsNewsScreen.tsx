@@ -14,7 +14,7 @@ import fetchWithToken from '../../utils/fetchCustom';
 import {io} from 'socket.io-client';
 import {Styles} from '../../assets/css/Styles';
 import Toast from 'react-native-toast-message';
-import {APP_API_SOCKET, POLICE_ID} from '@env';
+import {APP_API_SOCKET} from '@env';
 import ModalTakeAccident from './ModalTakeAccident';
 import {LoadingScreen} from '../LoadingScreen';
 import CSearchBar from '../../components/CSearchBar';
@@ -27,7 +27,6 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   const [accidents, setListAccidents] = useState<any>([]);
   const isActive = useRef<any>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [userSelected, setUserSelected] = useState<any>({});
   const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState<any>('');
@@ -74,7 +73,6 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   };
 
   const openModal = (item: any) => {
-    setUserSelected(item);
     setModalVisible(true);
   };
 
@@ -118,7 +116,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
         <ModalTakeAccident
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          user={userSelected}
+          accident={item}
           navigation={navigation}
         />
       </View>

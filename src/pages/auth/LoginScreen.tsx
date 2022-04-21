@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../../components/Background'
@@ -11,10 +11,12 @@ import { Card, Divider } from 'react-native-elements'
 import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 import fetchWithToken from '../../utils/fetchCustom'
 import jwt_decode from "jwt-decode";
+import { AuthContext } from '../../context/AuthContext';
 
 export const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const { signIn, authState } = useContext(AuthContext);
 
   const onLoginPressed = async () => {
     const emailError = emailValidator(email.value)
@@ -35,9 +37,17 @@ export const LoginScreen = ({ navigation }: any) => {
       console.log({decoded});
       
       if(decoded.role === "USER"){
+        signIn({
+          username: decoded.name,
+          userId: decoded.id,
+        });
         navigation.navigate('Inicio General')
       }
       else{
+        signIn({
+          username: decoded.name,
+          userId: decoded.id,
+        });
         navigation.navigate('Inicio Policía')
       }
     } catch (error) {
