@@ -9,7 +9,7 @@ export default function Background({ children }: any) {
       resizeMode='stretch'
       style={styles.background}
     >
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView style={styles.container} behavior='height'>
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>
