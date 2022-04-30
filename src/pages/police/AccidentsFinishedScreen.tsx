@@ -20,6 +20,8 @@ import {APP_API_SOCKET} from '@env';
 import {LoadingScreen} from '../LoadingScreen';
 import CSearchBar from '../../components/CSearchBar';
 import {useFocusEffect} from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
+import { IsAny } from 'react-hook-form';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -31,6 +33,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
 
   const [search, setSearch] = useState<any>('');
   const [filteredDataSource, setFilteredDataSource] = useState<any>('');
+  const [phase, setPhase] = useState();
   const isMounted = useRef(true);
 
   useFocusEffect(
@@ -129,6 +132,17 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
     );
   };
 
+  const searchFilterFunction = (phaseValue: any, text: any) => {
+    if (phaseValue) {
+      const newData = accidents.filter((a: any) => a.status == phaseValue);
+      setFilteredDataSource(newData);
+      setPhase(text);
+    } else {
+      setFilteredDataSource(accidents);
+      setPhase(text);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       {loading ? (
@@ -137,6 +151,16 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
         <View style={{flex: 1}}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Atendidos</Text>
+            <Picker
+              selectedValue={phase}
+              onValueChange={(value, index) => searchFilterFunction(Number(value), value)}
+              mode="dropdown" // Android only
+              style={styles.picker}
+            >
+              <Picker.Item label="Fase"/>
+              <Picker.Item label="En proceso" value="1" />
+              <Picker.Item label="Finalizado" value="2" />
+            </Picker>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
 
@@ -202,7 +226,7 @@ const styles = StyleSheet.create({
     }),
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 20,
   },
   dividerTitleLineRed: {
     borderColor: Styles.colors.primary,
@@ -210,5 +234,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginLeft: 20,
     width: 50,
+  },
+  picker: {
+    marginVertical: 30,
+    width: 160,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "#000000",
   },
 });

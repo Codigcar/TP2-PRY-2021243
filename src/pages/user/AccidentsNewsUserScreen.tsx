@@ -18,6 +18,8 @@ import {LoadingScreen} from '../LoadingScreen';
 import {ScrollView} from 'react-native-gesture-handler';
 import {AuthContext} from '../../context/AuthContext';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { Picker } from '@react-native-picker/picker';
+import CSearchAddress from '../../components/CSearchAddress';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -26,7 +28,10 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
   const [accidents, setListAccidents] = useState<any>([]);
   const isActive = useRef<any>(false);
   const [loading, setloading] = useState<boolean>(false);
+  const [search, setSearch] = useState<any>('');
+  const [filteredDataSource, setFilteredDataSource] = useState<any>('');
   const {authState} = useContext(AuthContext);
+  const [phase, setPhase] = useState();
 
   const fetchListAccidents = async () => {
     setloading(true);
@@ -36,6 +41,7 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
       );
       const data = await resp.json();
       setloading(false);
+      console.log({data});
       return data;
     } catch (error) {
       console.error({error});
@@ -45,13 +51,18 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     fetchListAccidents().then((resp: any) => setListAccidents(resp));
+    fetchListAccidents().then((resp: any) => setFilteredDataSource(resp));
     socketRef.current = io(`${APP_API_SOCKET}`);
     socketRef.current.on('accidents', (data: any) => {
       setListAccidents((oldArray: any) => [data, ...oldArray]);
+      setFilteredDataSource((oldArray: any) => [data, ...oldArray]);
     });
 
     socketRef.current.on('accidents-taken', (data: any) => {
       setListAccidents((array: any) =>
+        array.filter((item: any) => item.id !== data.id),
+      );
+      setFilteredDataSource((array: any) =>
         array.filter((item: any) => item.id !== data.id),
       );
     });
@@ -102,6 +113,17 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
     );
   };
 
+  const searchFilterFunction = (phaseValue: any, text: any) => {
+    if (phaseValue || phaseValue == 0) {
+      const newData = accidents.filter((a: any) => a.status == phaseValue);
+      setFilteredDataSource(newData);
+      setPhase(text);
+    } else {
+      setFilteredDataSource(accidents);
+      setPhase(text);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       {loading ? (
@@ -110,20 +132,27 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
         <View style={{flex: 1}}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Historial</Text>
+            <Picker
+              selectedValue={phase}
+              onValueChange={(value, index) => searchFilterFunction(Number(value), value)}
+              mode="dropdown" // Android only
+              style={styles.picker}
+            >
+              <Picker.Item label="Fase"/>
+              <Picker.Item label="No atendido" value="0" />
+              <Picker.Item label="En proceso" value="1" />
+              <Picker.Item label="Finalizado" value="2" />
+            </Picker>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
-          {accidents.length > 0 ? (
-            <FlatList
-              data={accidents}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={rendeItem}
-            />
-          ) : (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text>Alertas no encontradas</Text>
-            </View>
-          )}
+          <CSearchAddress
+            accidents={accidents}
+            search={search}
+            setSearch={setSearch}
+            filteredDataSource={filteredDataSource}
+            setFilteredDataSource={setFilteredDataSource}
+            rendeItem={rendeItem}
+          />
         </View>
       )}
     </SafeAreaView>
@@ -178,7 +207,7 @@ const styles = StyleSheet.create({
     }),
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 20,
   },
   dividerTitleLineRed: {
     borderColor: Styles.colors.primary,
@@ -186,5 +215,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginLeft: 20,
     width: 50,
+  },
+  picker: {
+    marginVertical: 30,
+    width: 170,
+    padding: 10,
+    borderWidth: 3,
+    borderColor: "#000000",
   },
 });
