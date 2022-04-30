@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { View, StyleSheet, TouchableOpacity, SegmentedControlIOSBase } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../../components/Background'
@@ -15,8 +15,10 @@ import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 import { dniValidator } from '../../helpers/dniValidator'
 import { phoneValidator } from '../../helpers/phoneValidator'
 import { licenseValidator } from '../../helpers/licenseValidator'
+import { AuthContext } from '../../context/AuthContext'
+import Snackbar from 'react-native-snackbar';
 
-export const RegisterPoliceScreen = ({ navigation }: any) => {
+export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
@@ -26,6 +28,8 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
   const [license, setLicense] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
+    const {authState} = useContext(AuthContext)
+    
     const nameError = fieldValidator(name.value)
     const birthDayError = fieldValidator(birthDay.value)
     const dniError = dniValidator(dni.value)
@@ -33,6 +37,8 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
     const licenseError = licenseValidator(phone.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
+
+
     if (emailError || passwordError || nameError || birthDayError || dniError || phoneError || licenseError) {
       setDni({...dni, error: dniError})
       setName({ ...name, error: nameError })
@@ -55,9 +61,13 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
     }
 
     try {
-      const response = await fetchWithToken(`api/users`, data, 'POST');
-      if(response.status === 201) {
-        navigation.navigate('Login')
+      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'POST');
+      if(response.status === 200) {
+        Snackbar.show({
+          text: 'Datos guardados exitosamente',
+          duration: Snackbar.LENGTH_LONG,
+        });
+        navigation.navigate('Inicio Policía');
       }else{
         const e = await response.json()
         for(let i = 0; i < e.message.length; i++){
@@ -149,18 +159,10 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
           onPress={onSignUpPressed}
           style={{ marginTop: 24, backgroundColor:'#C8013C' }}
           >
-          REGISTRATE
+          GUARDAR
         </Button>
       </Card>
       <Divider style={{height:20}}></Divider>
-      <Text>Ya tienes una cuenta? </Text>
-      <Button
-          mode="contained"
-          onPress={() => navigation.replace('Login')}
-          style={{marginTop:24, backgroundColor:'#131E60'}}
-          >
-          INGRESAR
-      </Button>
     </Background>
     </ScrollView>
   )

@@ -48,7 +48,7 @@ export const MapUser = ({markers, user = 'admin'}: Props) => {
             (marker: any, key: any) =>
               marker.status && (
                 <Marker
-                  // image={ require('../assets/custom-marker.png') }
+                  image={require("../assets/images/flag.png")}
                   key={key}
                   coordinate={{
                     latitude: Number(marker.latitude),

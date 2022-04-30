@@ -18,7 +18,7 @@ import {APP_API_SOCKET} from '@env';
 import ModalTakeAccident from './ModalTakeAccident';
 import {LoadingScreen} from '../LoadingScreen';
 import CSearchBar from '../../components/CSearchBar';
-import {ScrollView} from 'react-native-gesture-handler';
+import {Picker} from '@react-native-picker/picker';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -31,6 +31,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
 
   const [search, setSearch] = useState<any>('');
   const [filteredDataSource, setFilteredDataSource] = useState<any>('');
+  const [phase, setPhase] = useState();
 
   useEffect(() => {
     fetchListAccidents().then((resp: any) => {
@@ -123,6 +124,17 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
     );
   };
 
+  const searchFilterFunction = (phaseValue: any, text: any) => {
+    if (phaseValue) {
+      const newData = accidents.filter((a: any) => a.status == phaseValue);
+      setFilteredDataSource(newData);
+      setPhase(text);
+    } else {
+      setFilteredDataSource(accidents);
+      setPhase(text);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       {loading ? (
@@ -131,6 +143,17 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
         <View style={{flex: 1}}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Recientes</Text>
+            <Picker
+              selectedValue={phase}
+              onValueChange={(value, index) => searchFilterFunction(Number(value), value)}
+              mode="dropdown" // Android only
+              style={styles.picker}
+            >
+              <Picker.Item label="Fase"/>
+              <Picker.Item label="No atendido" value="0" />
+              <Picker.Item label="En proceso" value="1" />
+              <Picker.Item label="Finalizado" value="2" />
+            </Picker>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
           <CSearchBar
@@ -195,7 +218,7 @@ const styles = StyleSheet.create({
     }),
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 20,
   },
   dividerTitleLineRed: {
     borderColor: Styles.colors.primary,
@@ -203,5 +226,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginLeft: 20,
     width: 50,
+  },
+  picker: {
+    marginVertical: 30,
+    width: 170,
+    padding: 10,
+    borderWidth: 3,
+    borderColor: "#000000",
   },
 });

@@ -12,6 +12,8 @@ import { ScrollView } from 'react-native-gesture-handler'
 import fetchWithToken from '../../utils/fetchCustom'
 import { Card, Divider } from 'react-native-elements'
 import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
+import { dniValidator } from '../../helpers/dniValidator'
+import { phoneValidator } from '../../helpers/phoneValidator'
 
 export const RegisterGeneralScreen = ({ navigation }: any) => {
   const [name, setName] = useState({ value: '', error: '' })
@@ -24,8 +26,8 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
   const onSignUpPressed = async () => {
     const nameError = fieldValidator(name.value)
     const birthDayError = fieldValidator(birthDay.value)
-    const dniError = fieldValidator(dni.value)
-    const phoneError = fieldValidator(phone.value)
+    const dniError = dniValidator(dni.value)
+    const phoneError = phoneValidator(phone.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError || nameError || birthDayError || dniError || phoneError) {
@@ -48,11 +50,27 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
       "userType": "NORMAL"
     }
     try {
-      const sol = await fetchWithToken('api/users', data, 'POST');
-      navigation.navigate('Login')
+      const response = await fetchWithToken('api/users', data, 'POST');
+      if(response.status === 201) {
+        navigation.navigate('Login')
+      }else{
+        const e = await response.json()
+        for(let i = 0; i < e.message.length; i++){
+          if(e.message[i].element == 'dni'){
+            setDni({...dni, error: 'DNI ya registrado'})
+          }
+          if(e.message[i].element == 'email'){
+            setEmail({...email, error: 'Correo electronico ya registrado'})
+          }
+          if(e.message[i].element == 'phone'){
+            setPhone({...phone, error: 'Número ya registrado'})
+          }
+        }
+      }
     } catch (error) {
-      console.log({error});
+      console.log(error);
     }
+
   }
 
   return (
@@ -60,7 +78,7 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
       <Background>
       <Card wrapperStyle={{width:300, alignItems:"center"}} containerStyle={{borderRadius:30}}>
         <CardImage source={require('../../assets/images/car.png')} style={{width:100, height:100}}></CardImage>
-        <CardImage source={require('../../assets/images/texto_oficial.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
+        <CardImage source={require('../../assets/images/texto.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
         <TextInput
           label="DNI"
           returnKeyType="next"

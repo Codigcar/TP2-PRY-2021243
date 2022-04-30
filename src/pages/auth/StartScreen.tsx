@@ -1,28 +1,20 @@
 import React from 'react'
 import Button from './../../components/Button'
-import { Alert, ImageBackground, StyleSheet, View } from 'react-native'
+import { Alert, Dimensions, ImageBackground, StyleSheet, View } from 'react-native'
 import { Divider, Image, Text } from 'react-native-elements';
 import Paragraph from './../../components/Paragraph';
 
 export const StartScreen = ({ navigation }: any) => {
   return (
+  <View style={{flex: 1}}>
     <ImageBackground
       source={require('../../assets/images/BackgrundInicio.png')}
       style={{height:500}}
     >
-      <Divider
-        style={{height:50}}
-      ></Divider>
-      <View
-        style={{alignItems:"center"}}
-      >
-        <Image source={require('../../assets/images/car.png')} style={{width:100, height:100, borderRadius:20}}></Image>
-        <Image source={require('../../assets/images/texto_oficial.png')} style={{width:300, height:100, resizeMode:"contain"}}></Image>
+      <View style={{alignItems:"center"}}>
+        <Image source={require('../../assets/images/car.png')} style={{width:100, height:100}}/>
+        <Image source={require('../../assets/images/texto.png')} style={{width:300, height:100, resizeMode:"contain"}}/>
       </View>
-      <Divider
-        style={{height:175}}
-      >
-      </Divider>
       <Paragraph>
         Reporta accidentes en tiempo real
         Ayuda a la Policía Nacional Perú a atender
@@ -56,11 +48,6 @@ export const StartScreen = ({ navigation }: any) => {
           REGISTRARSE
       </Button>
     </ImageBackground>
+  </View>
   )
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  }
-});
+};
