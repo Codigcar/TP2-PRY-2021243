@@ -22,6 +22,7 @@ import CSearchBar from '../../components/CSearchBar';
 import {useFocusEffect} from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { IsAny } from 'react-hook-form';
+import SearchAccidents from '../../components/SearchAccidents';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -164,7 +165,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
           </View>
           <Divider style={styles.dividerTitleLineRed} />
 
-          <CSearchBar
+          <SearchAccidents
             accidents={accidents}
             search={search}
             setSearch={setSearch}

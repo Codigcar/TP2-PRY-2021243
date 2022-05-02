@@ -7,13 +7,14 @@ import TextInput from '../../components/TextInput'
 import { theme } from '../../utils/theme'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
-import { fieldValidator } from '../../helpers/fieldValidator'
 import { ScrollView } from 'react-native-gesture-handler'
 import fetchWithToken from '../../utils/fetchCustom'
 import { Card, Divider } from 'react-native-elements'
 import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 import { dniValidator } from '../../helpers/dniValidator'
 import { phoneValidator } from '../../helpers/phoneValidator'
+import { nameValidator } from '../../helpers/nameValidator'
+import { dateValidator } from '../../helpers/dateValidator'
 
 export const RegisterGeneralScreen = ({ navigation }: any) => {
   const [name, setName] = useState({ value: '', error: '' })
@@ -24,8 +25,8 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
   const [phone, setPhone] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
-    const nameError = fieldValidator(name.value)
-    const birthDayError = fieldValidator(birthDay.value)
+    const nameError = nameValidator(name.value)
+    const birthDayError = dateValidator(birthDay.value)
     const dniError = dniValidator(dni.value)
     const phoneError = phoneValidator(phone.value)
     const emailError = emailValidator(email.value)
@@ -47,7 +48,7 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
       "email": email.value,
       "password": password.value,
       "phone": phone.value,
-      "userType": "NORMAL"
+      "userType": "USER"
     }
     try {
       const response = await fetchWithToken('api/users', data, 'POST');

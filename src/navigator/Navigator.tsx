@@ -26,6 +26,7 @@ import { Text } from 'react-native';
 import Button from '../components/Button';
 import { EditProfilePoliceScreen } from '../pages/police/EditPoliceProfile';
 import { EditGeneralProfileScreen } from '../pages/user/EditGeneralProfile';
+import { DetailsScreen } from '../pages/DetailsScreen';
 
 const StackAuth = createStackNavigator();
 const Stack = createStackNavigator();
@@ -42,7 +43,7 @@ export const Navigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="Start"
+      initialRouteName="Details"
       screenOptions={{
         headerShown: false,
         cardStyle: {
@@ -92,6 +93,9 @@ export const AuthNavigator = () => {
       <Stack.Screen
         name="EditProfileGeneral"
         component={EditGeneralProfileScreen}></Stack.Screen>
+      <Stack.Screen
+        name="Details"
+        component={DetailsScreen}></Stack.Screen>
     </StackAuth.Navigator>
   );
 };

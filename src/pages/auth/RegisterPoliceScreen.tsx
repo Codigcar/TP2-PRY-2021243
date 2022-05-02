@@ -7,7 +7,6 @@ import TextInput from '../../components/TextInput'
 import { theme } from '../../utils/theme'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
-import { fieldValidator } from '../../helpers/fieldValidator'
 import { ScrollView } from 'react-native-gesture-handler'
 import fetchWithToken from '../../utils/fetchCustom'
 import { Card, Divider } from 'react-native-elements'
@@ -15,6 +14,8 @@ import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 import { dniValidator } from '../../helpers/dniValidator'
 import { phoneValidator } from '../../helpers/phoneValidator'
 import { licenseValidator } from '../../helpers/licenseValidator'
+import { nameValidator } from '../../helpers/nameValidator'
+import { dateValidator } from '../../helpers/dateValidator'
 
 export const RegisterPoliceScreen = ({ navigation }: any) => {
   const [name, setName] = useState({ value: '', error: '' })
@@ -26,8 +27,8 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
   const [license, setLicense] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
-    const nameError = fieldValidator(name.value)
-    const birthDayError = fieldValidator(birthDay.value)
+    const nameError = nameValidator(name.value)
+    const birthDayError = dateValidator(birthDay.value)
     const dniError = dniValidator(dni.value)
     const phoneError = phoneValidator(phone.value)
     const licenseError = licenseValidator(phone.value)

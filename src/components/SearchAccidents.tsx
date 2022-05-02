@@ -5,7 +5,7 @@ import {SearchBarBaseProps} from 'react-native-elements/dist/searchbar/SearchBar
 import {Styles} from '../assets/css/Styles';
 import {Dimensions} from 'react-native';
 
-const CSearchAddress = ({
+const SearchAccidents = ({
   accidents,
   search,
   setSearch,
@@ -17,10 +17,7 @@ const CSearchAddress = ({
 
   const searchFilterFunction = (text: string) => {
     if (text) {
-      const newData = accidents.filter(function (item: any) {
-        const itemData = item.address;
-        return itemData.indexOf(text) > -1;
-      });
+      const newData = accidents.filter((a:any) => a.address.toLowerCase().includes(text.toLowerCase()) || a.plate.toLowerCase().includes(text.toLowerCase()));
       setFilteredDataSource(newData);
       setSearch(text);
     } else {
@@ -48,7 +45,7 @@ const CSearchAddress = ({
         inputContainerStyle={Styles.estiloBarraBusqueda}
         onChangeText={(text: string) => searchFilterFunction(text)}
         onClear={() => searchFilterFunction('')}
-        placeholder="Buscar por Distrito..."
+        placeholder="Buscar..."
         value={search}
         platform={'android'}
       />
@@ -71,7 +68,7 @@ const CSearchAddress = ({
                       flex: 1,
                     }}>
                     <View>
-                      <Text>No se encontraron alertas con este distrito</Text>
+                      <Text>No se encontraron alertas con tu búsqueda</Text>
                     </View>
                   </View>
                 ) : (
@@ -95,4 +92,4 @@ const CSearchAddress = ({
   );
 };
 
-export default CSearchAddress;
+export default SearchAccidents;

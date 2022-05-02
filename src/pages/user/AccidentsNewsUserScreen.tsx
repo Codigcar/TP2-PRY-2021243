@@ -19,7 +19,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {AuthContext} from '../../context/AuthContext';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import CSearchAddress from '../../components/CSearchAddress';
+import SearchAccidents from '../../components/SearchAccidents';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -145,7 +145,7 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
             </Picker>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
-          <CSearchAddress
+          <SearchAccidents
             accidents={accidents}
             search={search}
             setSearch={setSearch}

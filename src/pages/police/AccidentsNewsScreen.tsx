@@ -19,6 +19,7 @@ import ModalTakeAccident from './ModalTakeAccident';
 import {LoadingScreen} from '../LoadingScreen';
 import CSearchBar from '../../components/CSearchBar';
 import {Picker} from '@react-native-picker/picker';
+import SearchAccidents from '../../components/SearchAccidents';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -156,7 +157,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
             </Picker>
           </View>
           <Divider style={styles.dividerTitleLineRed} />
-          <CSearchBar
+          <SearchAccidents
             accidents={accidents}
             search={search}
             setSearch={setSearch}
