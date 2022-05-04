@@ -11,15 +11,15 @@ import {
 import {Avatar, Divider} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {io} from 'socket.io-client';
-import {APP_API_SOCKET} from '@env';
 import {Styles} from '../../assets/css/Styles';
 import fetchWithToken from '../../utils/fetchCustom';
 import {LoadingScreen} from '../LoadingScreen';
-import {ScrollView} from 'react-native-gesture-handler';
 import {AuthContext} from '../../context/AuthContext';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
 import SearchAccidents from '../../components/SearchAccidents';
+import * as DEV from '../../utils/fetchCustom';
+
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -51,8 +51,7 @@ export const AccidentsNewsUserScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     fetchListAccidents().then((resp: any) => setListAccidents(resp));
-    fetchListAccidents().then((resp: any) => setFilteredDataSource(resp));
-    socketRef.current = io(`${APP_API_SOCKET}`);
+    socketRef.current = io(DEV.ENV.APP_API_SOCKET);
     socketRef.current.on('accidents', (data: any) => {
       setListAccidents((oldArray: any) => [data, ...oldArray]);
       setFilteredDataSource((oldArray: any) => [data, ...oldArray]);

@@ -1,20 +1,19 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Map} from '../../components/Map';
 
 import {io} from 'socket.io-client';
 import fetchWithToken from '../../utils/fetchCustom';
-import {PermissionsContext} from '../../context/PermissionsContext';
-import {APP_API, APP_API_SOCKET} from '@env';
+import * as DEV from '../../utils/fetchCustom';
+
 
 export const MapScreen = () => {
   const socketRef = useRef<any>();
   const [markers, setMarkers] = useState<any>([]);
-  const {askLocationPermission} = useContext(PermissionsContext);
 
   useEffect(() => {
     fetchListAccidents().then((resp: any) => setMarkers(resp));
-    socketRef.current = io(`${APP_API_SOCKET}`);
+    socketRef.current = io(DEV.ENV.APP_API_SOCKET);
     socketRef.current.on('accidents', (data: any) => {
       setMarkers((oldArray: any) => [...oldArray, data]);
       console.log({data});
