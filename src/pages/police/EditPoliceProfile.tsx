@@ -62,7 +62,7 @@ export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
     }
 
     try {
-      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'POST');
+      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'PUT');
       if(response.status === 200) {
         Snackbar.show({
           text: 'Datos guardados exitosamente',

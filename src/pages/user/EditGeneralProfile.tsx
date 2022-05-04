@@ -52,7 +52,7 @@ export const EditGeneralProfileScreen = ({ navigation, route}: any) => {
       "email": email.value,
       "password": password.value,
       "phone": phone.value,
-      "userType": "NORMAL"
+      "userType": "USER"
     }
 
     try {
