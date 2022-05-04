@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { View, StyleSheet, TouchableOpacity, SegmentedControlIOSBase } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../../components/Background'
@@ -13,10 +13,14 @@ import { Card, Divider } from 'react-native-elements'
 import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 import { dniValidator } from '../../helpers/dniValidator'
 import { phoneValidator } from '../../helpers/phoneValidator'
+import { AuthContext } from '../../context/AuthContext'
+import Snackbar from 'react-native-snackbar';
 import { nameValidator } from '../../helpers/nameValidator'
 import { dateValidator } from '../../helpers/dateValidator'
 
-export const RegisterGeneralScreen = ({ navigation }: any) => {
+export const EditGeneralProfileScreen = ({ navigation, route}: any) => {
+  const {authState} = useContext(AuthContext)
+
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
@@ -50,10 +54,15 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
       "phone": phone.value,
       "userType": "USER"
     }
+
     try {
-      const response = await fetchWithToken('api/users', data, 'POST');
-      if(response.status === 201) {
-        navigation.navigate('Login')
+      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'PUT');
+      if(response.status === 200) {
+        Snackbar.show({
+          text: 'Datos guardados exitosamente',
+          duration: Snackbar.LENGTH_LONG,
+        });
+        navigation.navigate('Inicio General');
       }else{
         const e = await response.json()
         for(let i = 0; i < e.message.length; i++){
@@ -138,18 +147,10 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
           onPress={onSignUpPressed}
           style={{marginTop:24, backgroundColor:'#C8013C'}}
           >
-          REGISTRATE
+          GUARDAR
         </Button>
       </Card>
       <Divider style={{height:20}}></Divider>
-      <Text>Ya tienes una cuenta? </Text>
-      <Button
-          mode="contained"
-          onPress={() => navigation.replace('Login')}
-          style={{marginTop:24, backgroundColor:'#131E60'}}
-          >
-          INGRESAR
-      </Button>
     </Background>
     </ScrollView>
   )

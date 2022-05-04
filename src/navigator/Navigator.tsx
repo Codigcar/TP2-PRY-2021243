@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {LoadingScreen} from '../pages/LoadingScreen';
 import {MapScreen} from '../pages/police/MapScreen';
@@ -21,6 +21,12 @@ import {RegisterPoliceScreen} from '../pages/auth/RegisterPoliceScreen';
 import {LoginScreen} from '../pages/auth/LoginScreen';
 import {MainGeneralScreen} from '../pages/auth/MainGeneralScreen';
 import {MainPoliceScreen} from '../pages/auth/MainPoliceScreen';
+import { Menu, MenuDivider, MenuItem } from 'react-native-material-menu';
+import { Text } from 'react-native';
+import Button from '../components/Button';
+import { EditProfilePoliceScreen } from '../pages/police/EditPoliceProfile';
+import { EditGeneralProfileScreen } from '../pages/user/EditGeneralProfile';
+import { DetailsScreen } from '../pages/DetailsScreen';
 
 const StackAuth = createStackNavigator();
 const Stack = createStackNavigator();
@@ -37,7 +43,7 @@ export const Navigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="AuthNavigator"
+      initialRouteName="Details"
       screenOptions={{
         headerShown: false,
         cardStyle: {
@@ -81,6 +87,15 @@ export const AuthNavigator = () => {
       <Stack.Screen
         name="Inicio Policía"
         component={PoliceBottomNavigator}></Stack.Screen>
+      <Stack.Screen
+        name="EditProfilePolice"
+        component={EditProfilePoliceScreen}></Stack.Screen>
+      <Stack.Screen
+        name="EditProfileGeneral"
+        component={EditGeneralProfileScreen}></Stack.Screen>
+      <Stack.Screen
+        name="Details"
+        component={DetailsScreen}></Stack.Screen>
     </StackAuth.Navigator>
   );
 };
@@ -138,7 +153,14 @@ export const PoliceBottomNavigator = () => {
   );
 };
 
-export const PoliceStackNavigatorAccNews = () => {
+export const PoliceStackNavigatorAccNews = ({navigation, route}: any) => {
+  const [visible, setVisible] = useState(false);
+
+  const hideMenu = () => setVisible(false);
+  const closeSession = () => navigation.navigate('Start');
+  const EditProfilePolice = () => navigation.navigate('EditProfilePolice');
+  const showMenu = () => setVisible(true);
+
   return (
     <StackV2.Navigator
       initialRouteName="AccidentsScreen"
@@ -162,12 +184,20 @@ export const PoliceStackNavigatorAccNews = () => {
       <StackV2.Screen
         options={{
           headerRight: () => (
-            <Avatar
-              rounded
-              title="MD"
-              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
-              containerStyle={{marginRight: 10}}
-            />
+            <Menu
+              visible={visible}
+              anchor={<Avatar
+                rounded
+                title="MD"
+                overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+                containerStyle={{marginRight: 10}}
+                onPress={showMenu}
+              />}
+              onRequestClose={hideMenu}
+            >
+            <MenuItem onPress={EditProfilePolice} textStyle={{color:"black"}}>Editar perfil</MenuItem>
+            <MenuItem onPress={closeSession} textStyle={{color:"black"}}>Cerrar sesión</MenuItem>
+            </Menu>
           ),
         }}
         name="AccidentsScreen"
@@ -193,7 +223,14 @@ export const PoliceStackNavigatorAccNews = () => {
   );
 };
 
-export const PoliceStackNavigatorAccFinished = () => {
+export const PoliceStackNavigatorAccFinished = ({ navigation, route }: any) => {
+  const [visible, setVisible] = useState(false);
+
+  const hideMenu = () => setVisible(false);
+  const closeSession = () => navigation.navigate('Start');
+  const EditProfilePolice = () => navigation.navigate('EditProfilePolice');
+  const showMenu = () => setVisible(true);
+
   return (
     <StackV2.Navigator
       initialRouteName="AccidentsFinishedScreen"
@@ -219,12 +256,20 @@ export const PoliceStackNavigatorAccFinished = () => {
         component={AccidentsFinishedScreen}
         options={{
           headerRight: () => (
-            <Avatar
-              rounded
-              title="MD"
-              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
-              containerStyle={{marginRight: 10}}
-            />
+            <Menu
+              visible={visible}
+              anchor={<Avatar
+                rounded
+                title="MD"
+                overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+                containerStyle={{marginRight: 10}}
+                onPress={showMenu}
+              />}
+              onRequestClose={hideMenu}
+            >
+            <MenuItem onPress={EditProfilePolice} textStyle={{color:"black"}}>Editar perfil</MenuItem>
+            <MenuItem onPress={closeSession} textStyle={{color:"black"}}>Cerrar sesión</MenuItem>
+            </Menu>
           ),
         }}
       />
@@ -299,7 +344,13 @@ export const UserBottomNavigator = () => {
   );
 };
 
-export const UserStackNavigatorAccNews = () => {
+export const UserStackNavigatorAccNews = ({navigation, route}:any) => {
+  const [visible, setVisible] = useState(false);
+  const hideMenu = () => setVisible(false);
+  const closeSession = () => navigation.navigate('Start');
+  const EditProfileGeneral = () => navigation.navigate('EditProfileGeneral');
+  const showMenu = () => setVisible(true);
+
   return (
     <StackV2.Navigator
       initialRouteName="AccidentsUserScreen"
@@ -323,14 +374,21 @@ export const UserStackNavigatorAccNews = () => {
       <StackV2.Screen
         name="AccidentsUserScreen"
         options={{
-          headerLeft: () => null,
           headerRight: () => (
-            <Avatar
-              rounded
-              title="MD"
-              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
-              containerStyle={{marginRight: 10}}
-            />
+            <Menu
+              visible={visible}
+              anchor={<Avatar
+                rounded
+                title="MD"
+                overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+                containerStyle={{marginRight: 10}}
+                onPress={showMenu}
+              />}
+              onRequestClose={hideMenu}
+            >
+            <MenuItem onPress={EditProfileGeneral} textStyle={{color:"black"}}>Editar perfil</MenuItem>
+            <MenuItem onPress={closeSession} textStyle={{color:"black"}}>Cerrar sesión</MenuItem>
+            </Menu>
           ),
         }}
         component={AccidentsNewsUserScreen}
@@ -341,12 +399,20 @@ export const UserStackNavigatorAccNews = () => {
           title: 'Detalle del Accidente',
           headerTintColor: 'white',
           headerRight: () => (
-            <Avatar
-              rounded
-              title="MD"
-              overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
-              containerStyle={{marginRight: 10}}
-            />
+            <Menu
+              visible={visible}
+              anchor={<Avatar
+                rounded
+                title="MD"
+                overlayContainerStyle={{backgroundColor: Styles.colors.primary}}
+                containerStyle={{marginRight: 10}}
+                onPress={showMenu}
+              />}
+              onRequestClose={hideMenu}
+            >
+            <MenuItem onPress={EditProfileGeneral} textStyle={{color:"black"}}>Editar perfil</MenuItem>
+            <MenuItem onPress={closeSession} textStyle={{color:"black"}}>Cerrar sesión</MenuItem>
+            </Menu>
           ),
         }}
         component={AccidentsDetailUserScreen}

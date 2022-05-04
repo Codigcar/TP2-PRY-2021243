@@ -52,7 +52,7 @@ export const Map = ({markers}: Props) => {
           markers.length > 0 &&
           markers.map((marker: any, key: any) => (
             <Marker
-              // image={ require('../assets/custom-marker.png') }
+              image={require("../assets/images/flag.png")}
               key={key}
               coordinate={{
                 latitude: Number(marker.latitude),

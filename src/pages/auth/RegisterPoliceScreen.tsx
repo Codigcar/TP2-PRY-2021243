@@ -7,11 +7,15 @@ import TextInput from '../../components/TextInput'
 import { theme } from '../../utils/theme'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
-import { fieldValidator } from '../../helpers/fieldValidator'
 import { ScrollView } from 'react-native-gesture-handler'
 import fetchWithToken from '../../utils/fetchCustom'
 import { Card, Divider } from 'react-native-elements'
 import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
+import { dniValidator } from '../../helpers/dniValidator'
+import { phoneValidator } from '../../helpers/phoneValidator'
+import { licenseValidator } from '../../helpers/licenseValidator'
+import { nameValidator } from '../../helpers/nameValidator'
+import { dateValidator } from '../../helpers/dateValidator'
 
 export const RegisterPoliceScreen = ({ navigation }: any) => {
   const [name, setName] = useState({ value: '', error: '' })
@@ -21,23 +25,20 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
   const [birthDay, setBirthday] = useState({value: '', error: ''})
   const [phone, setPhone] = useState({value: '', error: ''})
   const [license, setLicense] = useState({value: '', error: ''})
-  const [patrol, setPatrol] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
-    const nameError = fieldValidator(name.value)
-    const birthDayError = fieldValidator(birthDay.value)
-    const dniError = fieldValidator(dni.value)
-    const phoneError = fieldValidator(phone.value)
-    const licenseError = fieldValidator(phone.value)
-    const patrolError = fieldValidator(phone.value)
+    const nameError = nameValidator(name.value)
+    const birthDayError = dateValidator(birthDay.value)
+    const dniError = dniValidator(dni.value)
+    const phoneError = phoneValidator(phone.value)
+    const licenseError = licenseValidator(phone.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError || birthDayError || dniError || phoneError || patrolError || licenseError) {
+    if (emailError || passwordError || nameError || birthDayError || dniError || phoneError || licenseError) {
       setDni({...dni, error: dniError})
       setName({ ...name, error: nameError })
       setPhone({ ...phone, error: phoneError })
       setLicense({ ...license, error: licenseError })
-      setPatrol({ ...patrol, error: patrolError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
       setBirthday({...birthDay, error: birthDayError})
@@ -51,13 +52,27 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
       "email": email.value,
       "password": password.value,
       "license": license.value,
-      "patrolNumber": patrol.value,
       "userType": "POLICIA"
     }
 
     try {
-      await fetchWithToken(`api/users`, data, 'POST');
-      navigation.navigate('Login')
+      const response = await fetchWithToken(`api/users`, data, 'POST');
+      if(response.status === 201) {
+        navigation.navigate('Login')
+      }else{
+        const e = await response.json()
+        for(let i = 0; i < e.message.length; i++){
+          if(e.message[i].element == 'dni'){
+            setDni({...dni, error: 'DNI ya registrado'})
+          }
+          if(e.message[i].element == 'email'){
+            setEmail({...email, error: 'Correo electronico ya registrado'})
+          }
+          if(e.message[i].element == 'phone'){
+            setPhone({...phone, error: 'Número ya registrado'})
+          }
+        }
+      }
     } catch (error) {
       throw(error)
     }
@@ -68,7 +83,7 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
       <Background>
       <Card wrapperStyle={{width:300, alignItems:"center"}} containerStyle={{borderRadius:30}}>
         <CardImage source={require('../../assets/images/car.png')} style={{width:100, height:100}}></CardImage>
-        <CardImage source={require('../../assets/images/texto_oficial.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
+        <CardImage source={require('../../assets/images/texto.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
         <TextInput
           label="DNI"
           returnKeyType="next"
@@ -108,14 +123,6 @@ export const RegisterPoliceScreen = ({ navigation }: any) => {
           onChangeText={(text: string) => setLicense({ value: text, error: '' })}
           error={!!license.error}
           errorText={license.error}
-        />
-        <TextInput
-          label="Número de patrulla"
-          returnKeyType="next"
-          value={patrol.value}
-          onChangeText={(text: string) => setPatrol({ value: text, error: '' })}
-          error={!!patrol.error}
-          errorText={patrol.error}
         />
         <TextInput
           label="Correo"

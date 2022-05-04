@@ -34,14 +34,12 @@ export const LoginScreen = ({ navigation }: any) => {
       const token = await fetchWithToken('api/users/login', data, 'POST');
       const resp = await token.json();
       const decoded:any = jwt_decode(resp.token);
-      console.log({decoded});
-      
       if(decoded.role === "USER"){
         signIn({
           username: decoded.name,
           userId: decoded.id,
         });
-        navigation.navigate('Inicio General')
+        navigation.navigate('Inicio General');
       }
       else{
         signIn({
@@ -59,7 +57,7 @@ export const LoginScreen = ({ navigation }: any) => {
     <Background>
       <Card wrapperStyle={{width:300, alignItems:"center"}} containerStyle={{borderRadius:30}}>
         <CardImage source={require('../../assets/images/car.png')} style={{width:100, height:100}}></CardImage>
-        <CardImage source={require('../../assets/images/texto_oficial.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
+        <CardImage source={require('../../assets/images/texto.png')} style={{width:300, height:100, resizeMode:"contain"}}></CardImage>
         <TextInput
           label="Correo Electronico"
           returnKeyType="next"

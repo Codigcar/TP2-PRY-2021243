@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { View, StyleSheet, TouchableOpacity, SegmentedControlIOSBase } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../../components/Background'
@@ -13,47 +13,64 @@ import { Card, Divider } from 'react-native-elements'
 import { CardImage } from '@react-native-elements/base/dist/Card/Card.Image'
 import { dniValidator } from '../../helpers/dniValidator'
 import { phoneValidator } from '../../helpers/phoneValidator'
+import { licenseValidator } from '../../helpers/licenseValidator'
+import { AuthContext } from '../../context/AuthContext'
+import Snackbar from 'react-native-snackbar';
 import { nameValidator } from '../../helpers/nameValidator'
 import { dateValidator } from '../../helpers/dateValidator'
 
-export const RegisterGeneralScreen = ({ navigation }: any) => {
+export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
+  const {authState} = useContext(AuthContext)
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
   const [dni, setDni] = useState({value: '', error: ''})
   const [birthDay, setBirthday] = useState({value: '', error: ''})
   const [phone, setPhone] = useState({value: '', error: ''})
+  const [license, setLicense] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
+   
+    
     const nameError = nameValidator(name.value)
     const birthDayError = dateValidator(birthDay.value)
     const dniError = dniValidator(dni.value)
     const phoneError = phoneValidator(phone.value)
+    const licenseError = licenseValidator(phone.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError || birthDayError || dniError || phoneError) {
+console.log('1');
+
+
+    if (emailError || passwordError || nameError || birthDayError || dniError || phoneError || licenseError) {
       setDni({...dni, error: dniError})
       setName({ ...name, error: nameError })
       setPhone({ ...phone, error: phoneError })
+      setLicense({ ...license, error: licenseError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
-      setBirthday({...birthDay, error: birthDayError})
+      setBirthday({...birthDay, error: birthDayError}); console.log('2');
       return
     }
-
     const data: any = {
       "dni": dni.value,
       "name": name.value,
+      "phone": phone.value,
       "dateOfBirth": birthDay.value,
       "email": email.value,
       "password": password.value,
-      "phone": phone.value,
-      "userType": "USER"
+      "license": license.value,
+      "userType": "POLICIA"
     }
+
     try {
-      const response = await fetchWithToken('api/users', data, 'POST');
-      if(response.status === 201) {
-        navigation.navigate('Login')
+      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'PUT');
+      if(response.status === 200) {
+        Snackbar.show({
+          text: 'Datos guardados exitosamente',
+          duration: Snackbar.LENGTH_LONG,
+        });
+        navigation.navigate('Inicio Policía');
       }else{
         const e = await response.json()
         for(let i = 0; i < e.message.length; i++){
@@ -69,9 +86,8 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
         }
       }
     } catch (error) {
-      console.log(error);
+      throw(error)
     }
-
   }
 
   return (
@@ -113,7 +129,15 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
           errorText={birthDay.error}
         />
         <TextInput
-          label="Correo electronico"
+          label="Licencia"
+          returnKeyType="next"
+          value={license.value}
+          onChangeText={(text: string) => setLicense({ value: text, error: '' })}
+          error={!!license.error}
+          errorText={license.error}
+        />
+        <TextInput
+          label="Correo"
           returnKeyType="next"
           value={email.value}
           onChangeText={(text: string) => setEmail({ value: text, error: '' })}
@@ -136,20 +160,12 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
         <Button
           mode="contained"
           onPress={onSignUpPressed}
-          style={{marginTop:24, backgroundColor:'#C8013C'}}
+          style={{ marginTop: 24, backgroundColor:'#C8013C' }}
           >
-          REGISTRATE
+          GUARDAR
         </Button>
       </Card>
       <Divider style={{height:20}}></Divider>
-      <Text>Ya tienes una cuenta? </Text>
-      <Button
-          mode="contained"
-          onPress={() => navigation.replace('Login')}
-          style={{marginTop:24, backgroundColor:'#131E60'}}
-          >
-          INGRESAR
-      </Button>
     </Background>
     </ScrollView>
   )
@@ -158,14 +174,10 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
     marginTop: 4,
   },
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
   },
-  TextInput: {
-    width: 300,
-  }
 })
