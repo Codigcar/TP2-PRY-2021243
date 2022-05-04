@@ -20,6 +20,7 @@ import { nameValidator } from '../../helpers/nameValidator'
 import { dateValidator } from '../../helpers/dateValidator'
 
 export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
+  const {authState} = useContext(AuthContext)
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
@@ -29,7 +30,7 @@ export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
   const [license, setLicense] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
-    const {authState} = useContext(AuthContext)
+   
     
     const nameError = nameValidator(name.value)
     const birthDayError = dateValidator(birthDay.value)
@@ -38,6 +39,7 @@ export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
     const licenseError = licenseValidator(phone.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
+console.log('1');
 
 
     if (emailError || passwordError || nameError || birthDayError || dniError || phoneError || licenseError) {
@@ -47,7 +49,7 @@ export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
       setLicense({ ...license, error: licenseError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
-      setBirthday({...birthDay, error: birthDayError})
+      setBirthday({...birthDay, error: birthDayError}); console.log('2');
       return
     }
     const data: any = {
