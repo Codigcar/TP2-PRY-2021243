@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,11 +14,12 @@ import fetchWithToken from '../../utils/fetchCustom';
 import {io} from 'socket.io-client';
 import {Styles} from '../../assets/css/Styles';
 import Toast from 'react-native-toast-message';
-import {APP_API_SOCKET} from '@env';
 import ModalTakeAccident from './ModalTakeAccident';
 import {LoadingScreen} from '../LoadingScreen';
 import CSearchBar from '../../components/CSearchBar';
-import {ScrollView} from 'react-native-gesture-handler';
+import * as DEV from '../../utils/fetchCustom';
+import { useFocusEffect } from '@react-navigation/native';
+import { Alert } from 'react-native';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -28,27 +29,67 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   const isActive = useRef<any>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [accidentSelected, setaccidentSelected] = useState('');
 
   const [search, setSearch] = useState<any>('');
   const [filteredDataSource, setFilteredDataSource] = useState<any>('');
+  const isMounted = useRef(true);
+
+  // useEffect(() => {
+  //   fetchListAccidents().then((resp: any) => {
+  //     setListAccidents(resp);
+  //   });
+  //   socketRef.current = io(DEV.ENV.APP_API_SOCKET);
+  //   socketRef.current.on('accidents', (data: any) => {
+  //     console.log({data});
+  //     showToast();
+  //     setListAccidents((oldArray: any) => [data, ...oldArray]);
+  //   });
+
+  //   socketRef.current.on('accidents-taken', (data: any) => {
+  //     setListAccidents((array: any) =>
+  //       array.filter((item: any) => item.id !== data.id),
+  //     );
+  //   });
+  //   isActive.current = true;
+  // }, []);
+//----------------------
+  useFocusEffect(
+    useCallback(() => {
+      isMounted.current = true;
+      fetchListAccidents().then((resp: any) => {
+          if (isMounted.current) {
+            setListAccidents(resp);
+          }
+        })
+        .catch(err => {
+          console.error({err});
+          Alert.alert('Error', 'Intentelo en unos minutos por favor');
+        });
+      socketRef.current = io( DEV.ENV.APP_API_SOCKET );
+      socketRef.current.on('accidents', (data: any) => {
+        console.log({data});
+        showToast();
+        setListAccidents((oldArray: any) => [data, ...oldArray]);
+      });
+
+      socketRef.current.on('accidents-taken', (data: any) => {
+        setListAccidents((array: any) =>
+          array.filter((item: any) => item.id !== data.id),
+        );
+      });
+      isActive.current = true;
+      return () => {
+        console.log('Des-montado');
+        isMounted.current = false;
+      };
+    }, []),
+  );
 
   useEffect(() => {
-    fetchListAccidents().then((resp: any) => {
-      setListAccidents(resp);
-    });
-    socketRef.current = io(`${APP_API_SOCKET}`);
-    socketRef.current.on('accidents', (data: any) => {
-      console.log({data});
-      showToast();
-      setListAccidents((oldArray: any) => [data, ...oldArray]);
-    });
-
-    socketRef.current.on('accidents-taken', (data: any) => {
-      setListAccidents((array: any) =>
-        array.filter((item: any) => item.id !== data.id),
-      );
-    });
-    isActive.current = true;
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   const fetchListAccidents = async () => {
@@ -64,6 +105,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
     }
   };
 
+
   const showToast = () => {
     Toast.show({
       type: 'success',
@@ -73,6 +115,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
   };
 
   const openModal = (item: any) => {
+    setaccidentSelected(item);
     setModalVisible(true);
   };
 
@@ -116,7 +159,7 @@ export const AccidentsNewsScreen = ({navigation}: Props) => {
         <ModalTakeAccident
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          accident={item}
+          accident={accidentSelected}
           navigation={navigation}
         />
       </View>

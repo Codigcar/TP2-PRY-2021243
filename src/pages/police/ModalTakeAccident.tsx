@@ -10,8 +10,8 @@ import {
 import {Button} from 'react-native-elements';
 import {io} from 'socket.io-client';
 import {Styles} from '../../assets/css/Styles';
-import {APP_API_SOCKET} from '@env';
 import { AuthContext } from '../../context/AuthContext';
+import * as DEV from '../../utils/fetchCustom';
 
 export interface IAccident {
   longitude: string;
@@ -27,7 +27,7 @@ export interface IAccident {
 const ModalTakeAccident = ({modalVisible, setModalVisible, accident, navigation}: any) => {
   const socketRef = useRef<any>();
   const { authState } = useContext(AuthContext);
-  socketRef.current = io(`${APP_API_SOCKET}`);
+  socketRef.current = io(DEV.ENV.APP_API_SOCKET);
 
   const acceptedAccident = (id: string) => {
     socketRef.current.emit('accidents-taken', {id: accident.id, userPolice: authState.userId});

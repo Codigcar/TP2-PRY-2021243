@@ -5,21 +5,20 @@ import {
   Text,
   View,
   TouchableOpacity,
-  FlatList,
   Platform,
   Alert,
   SafeAreaView,
 } from 'react-native';
-import {Avatar, Divider, SearchBar} from 'react-native-elements';
+import {Avatar, Divider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import fetchWithToken from '../../utils/fetchCustom';
 import {io} from 'socket.io-client';
 import {Styles} from '../../assets/css/Styles';
 
-import {APP_API_SOCKET} from '@env';
 import {LoadingScreen} from '../LoadingScreen';
 import CSearchBar from '../../components/CSearchBar';
 import {useFocusEffect} from '@react-navigation/native';
+import * as DEV from '../../utils/fetchCustom';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -46,7 +45,7 @@ export const AccidentsFinishedScreen = ({navigation}: Props) => {
           console.error({err});
           Alert.alert('Error', 'Intentelo en unos minutos por favor');
         });
-      socketRef.current = io(`${APP_API_SOCKET}`);
+      socketRef.current = io( DEV.ENV.APP_API_SOCKET );
       socketRef.current.on('accidents', (data: any) => {
         console.error('accidents: ', data);
         setListAccidents((oldArray: any) => [
