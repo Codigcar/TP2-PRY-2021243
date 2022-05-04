@@ -52,65 +52,65 @@ const ModalConnectNFC = ({
 
   async function readNdef() {
     try {
-      // await NfcManager.requestTechnology([NfcTech.Ndef]);
-      // const tag = await NfcManager.getTag();
+      await NfcManager.requestTechnology([NfcTech.Ndef]);
+      const tag = await NfcManager.getTag();
 
-      // const tagNombre: any = tag?.ndefMessage[0]?.payload;
-      // const tagPlaca: any = tag?.ndefMessage[1]?.payload;
-      // const tagCelular: any = tag?.ndefMessage[2]?.payload;
-      // const tagSOAT : any = tag?.ndefMessage[3]?.payload;
+      const tagNombre: any = tag?.ndefMessage[0]?.payload;
+      const tagPlaca: any = tag?.ndefMessage[1]?.payload;
+      const tagCelular: any = tag?.ndefMessage[2]?.payload;
+      const tagSOAT : any = tag?.ndefMessage[3]?.payload;
 
-      // let Nombre = Ndef.text.decodePayload(tagNombre);
-      // let Placa = Ndef.text.decodePayload(tagPlaca);
-      // let Celular = Ndef.text.decodePayload(tagCelular);
-      // let SOAT = Ndef.text.decodePayload(tagSOAT);
+      let Nombre = Ndef.text.decodePayload(tagNombre);
+      let Placa = Ndef.text.decodePayload(tagPlaca);
+      let Celular = Ndef.text.decodePayload(tagCelular);
+      let SOAT = Ndef.text.decodePayload(tagSOAT);
 
       let distric = '';
       let address = '';
 
-      // if (tag) {
+      if (tag) {
         cancelNfcScan();
         showToast();
 
-        // var currentLocation = {
-        //   lat: latitude,
-        //   lng: longitude,
-        // };
+        var currentLocation = {
+          lat: latitude,
+          lng: longitude,
+        };
 
-        // const respGeo = await Geocoder.geocodePosition(currentLocation);
-        // try {
-        //   distric = await respGeo[1].locality;
-        //   address = await respGeo[2].formattedAddress;
-        // } catch (error) {
-        //   console.error(error);
-        // }
+        const respGeo = await Geocoder.geocodePosition(currentLocation);
+        try {
+          distric = await respGeo[1].locality;
+          address = await respGeo[2].formattedAddress;
+        } catch (error) {
+          console.error(error);
+        }
 
         const body: IAccident = {
-          // latitude: latitude.toString(),
-          // longitude: longitude.toString(),
-          // dateCreated: new Date().toISOString(),
-          // plate: Placa,
-          // owner: Nombre,
-          // phone: Celular,
-          // user: authState.userId,
-          // address: distric + ', ' + address,
-          // patrol_number: SOAT,
-
-          latitude: '-12.156843815273826',
-          longitude:  '-76.99931723000626',
-          dateCreated: '12-12-2000',
-          plate: 'Placa',
-          owner: 'Nombre',
-          phone: 'Celular',
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+          dateCreated: new Date().toISOString(),
+          plate: Placa,
+          owner: Nombre,
+          phone: Celular,
           user: authState.userId,
-          address: 'Av. peru' + ', ' + 'address',
+          address: distric + ', ' + address,
           soat: 'SOAT',
+
+          // latitude: '-12.156843815273826',
+          // longitude:  '-76.99931723000626',
+          // dateCreated: '12-12-2000',
+          // plate: 'Placa',
+          // owner: 'Nombre',
+          // phone: 'Celular',
+          // user: authState.userId,
+          // address: 'Av. peru' + ', ' + 'address',
+          // soat: 'SOAT',
         };
 
         socketRef.current = io(DEV.ENV.APP_API_SOCKET);
         socketRef.current.emit('accidents', body);
 
-      // }
+      }
     } catch (ex) {
       console.warn('Oops!', JSON.stringify(ex));
     } finally {
