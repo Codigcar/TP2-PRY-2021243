@@ -19,6 +19,8 @@ import { AuthContext } from '../../context/AuthContext'
 import Snackbar from 'react-native-snackbar';
 
 export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
+  const {authState} = useContext(AuthContext)
+
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
@@ -28,7 +30,6 @@ export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
   const [license, setLicense] = useState({value: '', error: ''})
 
   const onSignUpPressed = async () => {
-    const {authState} = useContext(AuthContext)
     
     const nameError = fieldValidator(name.value)
     const birthDayError = fieldValidator(birthDay.value)
@@ -61,7 +62,7 @@ export const EditProfilePoliceScreen = ({ navigation, route }: any) => {
     }
 
     try {
-      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'POST');
+      const response = await fetchWithToken(`api/users/${authState.userId}`, data, 'PUT');
       if(response.status === 200) {
         Snackbar.show({
           text: 'Datos guardados exitosamente',

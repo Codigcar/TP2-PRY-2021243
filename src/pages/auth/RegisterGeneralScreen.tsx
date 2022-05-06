@@ -47,7 +47,7 @@ export const RegisterGeneralScreen = ({ navigation }: any) => {
       "email": email.value,
       "password": password.value,
       "phone": phone.value,
-      "userType": "NORMAL"
+      "userType": "USER"
     }
     try {
       const response = await fetchWithToken('api/users', data, 'POST');
